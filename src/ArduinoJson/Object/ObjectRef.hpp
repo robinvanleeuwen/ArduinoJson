@@ -92,21 +92,6 @@ class ObjectConstRef : public ObjectRefBase<const CollectionData>,
     return !getMemberConst(key).isUnbound();
   }
 
-  // getMemberConst(const std::string&) const
-  // getMemberConst(const String&) const
-  template <typename TString>
-  FORCE_INLINE VariantConstRef getMemberConst(const TString& key) const {
-    return VariantConstRef(objectGetMember(_data, adaptString(key)));
-  }
-
-  // getMemberConst(char*) const
-  // getMemberConst(const char*) const
-  // getMemberConst(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE VariantConstRef getMemberConst(TChar* key) const {
-    return VariantConstRef(objectGetMember(_data, adaptString(key)));
-  }
-
   // operator[](const std::string&) const
   // operator[](const String&) const
   template <typename TString>
@@ -143,13 +128,35 @@ class ObjectConstRef : public ObjectRefBase<const CollectionData>,
   }
 
  private:
+  // getMemberConst(const std::string&) const
+  // getMemberConst(const String&) const
+  template <typename TString>
+  FORCE_INLINE VariantConstRef getMemberConst(const TString& key) const {
+    return VariantConstRef(objectGetMember(_data, adaptString(key)));
+  }
+
+  // getMemberConst(char*) const
+  // getMemberConst(const char*) const
+  // getMemberConst(const __FlashStringHelper*) const
+  template <typename TChar>
+  FORCE_INLINE VariantConstRef getMemberConst(TChar* key) const {
+    return VariantConstRef(objectGetMember(_data, adaptString(key)));
+  }
 };
+
+template <typename TObject, typename TStringRef>
+class MemberProxy;
 
 class ObjectRef : public ObjectRefBase<CollectionData>,
                   public ObjectShortcuts<ObjectRef>,
                   public VariantOperators<ObjectRef>,
                   public Visitable {
   typedef ObjectRefBase<CollectionData> base_type;
+
+  friend class ObjectShortcuts<ObjectRef>;
+
+  template <typename TObject, typename TStringRef>
+  friend class MemberProxy;
 
  public:
   typedef ObjectIterator iterator;
@@ -189,6 +196,32 @@ class ObjectRef : public ObjectRefBase<CollectionData>,
     return _data->copyFrom(*src._data, _pool);
   }
 
+  FORCE_INLINE bool operator==(ObjectRef rhs) const {
+    return ObjectConstRef(_data) == ObjectConstRef(rhs._data);
+  }
+
+  FORCE_INLINE void remove(iterator it) const {
+    if (!_data)
+      return;
+    _data->removeSlot(it.internal());
+  }
+
+  // remove(const std::string&) const
+  // remove(const String&) const
+  template <typename TString>
+  FORCE_INLINE void remove(const TString& key) const {
+    objectRemove(_data, adaptString(key));
+  }
+
+  // remove(char*) const
+  // remove(const char*) const
+  // remove(const __FlashStringHelper*) const
+  template <typename TChar>
+  FORCE_INLINE void remove(TChar* key) const {
+    objectRemove(_data, adaptString(key));
+  }
+
+ private:
   // getMember(const std::string&) const
   // getMember(const String&) const
   template <typename TString>
@@ -238,32 +271,6 @@ class ObjectRef : public ObjectRefBase<CollectionData>,
                                            getStringStoragePolicy(key)));
   }
 
-  FORCE_INLINE bool operator==(ObjectRef rhs) const {
-    return ObjectConstRef(_data) == ObjectConstRef(rhs._data);
-  }
-
-  FORCE_INLINE void remove(iterator it) const {
-    if (!_data)
-      return;
-    _data->removeSlot(it.internal());
-  }
-
-  // remove(const std::string&) const
-  // remove(const String&) const
-  template <typename TString>
-  FORCE_INLINE void remove(const TString& key) const {
-    objectRemove(_data, adaptString(key));
-  }
-
-  // remove(char*) const
-  // remove(const char*) const
-  // remove(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE void remove(TChar* key) const {
-    objectRemove(_data, adaptString(key));
-  }
-
- private:
   MemoryPool* _pool;
 };
 
