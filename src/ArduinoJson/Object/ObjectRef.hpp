@@ -14,6 +14,9 @@
 
 namespace ARDUINOJSON_NAMESPACE {
 
+template <typename TObject, typename TStringRef>
+class MemberProxy;
+
 template <typename TData>
 class ObjectRefBase {
  public:
@@ -143,9 +146,6 @@ class ObjectConstRef : public ObjectRefBase<const CollectionData>,
     return VariantConstRef(objectGetMember(_data, adaptString(key)));
   }
 };
-
-template <typename TObject, typename TStringRef>
-class MemberProxy;
 
 class ObjectRef : public ObjectRefBase<CollectionData>,
                   public ObjectShortcuts<ObjectRef>,

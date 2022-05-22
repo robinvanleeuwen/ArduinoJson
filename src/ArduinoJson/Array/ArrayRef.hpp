@@ -109,6 +109,7 @@ class ArrayConstRef : public ArrayRefBase<const CollectionData>,
     return getElementConst(index);
   }
 
+ private:
   FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
     return VariantConstRef(_data ? _data->getElement(index) : 0);
   }
@@ -119,6 +120,9 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
                  public VariantOperators<ArrayRef>,
                  public Visitable {
   typedef ArrayRefBase<CollectionData> base_type;
+
+  friend class ArrayShortcuts<ArrayRef>;
+  friend class ElementProxy<ArrayRef>;
 
  public:
   typedef ArrayIterator iterator;
@@ -134,10 +138,6 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
 
   operator ArrayConstRef() const {
     return ArrayConstRef(_data);
-  }
-
-  VariantRef addElement() const {
-    return VariantRef(_pool, arrayAdd(_data, _pool));
   }
 
   FORCE_INLINE iterator begin() const {
@@ -161,21 +161,6 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
     return ArrayConstRef(_data) == ArrayConstRef(rhs._data);
   }
 
-  // Internal use
-  FORCE_INLINE VariantRef getOrAddElement(size_t index) const {
-    return VariantRef(_pool, _data ? _data->getOrAddElement(index, _pool) : 0);
-  }
-
-  // Gets the value at the specified index.
-  FORCE_INLINE VariantRef getElement(size_t index) const {
-    return VariantRef(_pool, _data ? _data->getElement(index) : 0);
-  }
-
-  // Gets the value at the specified index.
-  FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
-    return VariantConstRef(_data ? _data->getElement(index) : 0);
-  }
-
   // Removes element at specified position.
   FORCE_INLINE void remove(iterator it) const {
     if (!_data)
@@ -197,6 +182,25 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
   }
 
  private:
+  VariantRef addElement() const {
+    return VariantRef(_pool, arrayAdd(_data, _pool));
+  }
+
+  // Internal use
+  FORCE_INLINE VariantRef getOrAddElement(size_t index) const {
+    return VariantRef(_pool, _data ? _data->getOrAddElement(index, _pool) : 0);
+  }
+
+  // Gets the value at the specified index.
+  FORCE_INLINE VariantRef getElement(size_t index) const {
+    return VariantRef(_pool, _data ? _data->getElement(index) : 0);
+  }
+
+  // Gets the value at the specified index.
+  FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
+    return VariantConstRef(_data ? _data->getElement(index) : 0);
+  }
+
   MemoryPool* _pool;
 };
 

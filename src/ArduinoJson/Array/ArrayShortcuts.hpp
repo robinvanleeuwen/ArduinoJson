@@ -11,6 +11,7 @@ namespace ARDUINOJSON_NAMESPACE {
 // Forward declarations.
 class ArrayRef;
 class ObjectRef;
+class VariantRef;
 template <typename>
 class ElementProxy;
 
@@ -23,6 +24,9 @@ class ArrayShortcuts {
   FORCE_INLINE ObjectRef createNestedObject() const;
 
   FORCE_INLINE ArrayRef createNestedArray() const;
+
+  // Adds a new variant to the array
+  FORCE_INLINE VariantRef add() const;
 
   // Adds the specified value at the end of the array.
   //
