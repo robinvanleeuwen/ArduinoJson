@@ -189,6 +189,14 @@ class VariantRef : public VariantRefBase<VariantData>,
                    public Visitable {
   typedef VariantRefBase<VariantData> base_type;
 
+  template <typename TObject, typename TStringRef>
+  friend class MemberProxy;
+  template <typename TArray>
+  friend class ElementProxy;
+  friend class ArrayShortcuts<VariantRef>;
+  friend class ObjectShortcuts<VariantRef>;
+  friend class VariantShortcuts<VariantRef>;
+
  public:
   // Intenal use only
   FORCE_INLINE VariantRef(MemoryPool *pool, VariantData *data)
@@ -287,6 +295,39 @@ class VariantRef : public VariantRefBase<VariantData>,
   typename enable_if<is_same<T, VariantRef>::value, VariantRef>::type to()
       const;
 
+  FORCE_INLINE void remove(size_t index) const {
+    if (_data)
+      _data->remove(index);
+  }
+  // remove(char*) const
+  // remove(const char*) const
+  // remove(const __FlashStringHelper*) const
+  template <typename TChar>
+  FORCE_INLINE typename enable_if<IsString<TChar *>::value>::type remove(
+      TChar *key) const {
+    if (_data)
+      _data->remove(adaptString(key));
+  }
+  // remove(const std::string&) const
+  // remove(const String&) const
+  template <typename TString>
+  FORCE_INLINE typename enable_if<IsString<TString>::value>::type remove(
+      const TString &key) const {
+    if (_data)
+      _data->remove(adaptString(key));
+  }
+
+  inline void link(VariantConstRef target) {
+    if (!_data)
+      return;
+    const VariantData *targetData = getData(target);
+    if (targetData)
+      _data->setPointer(targetData);
+    else
+      _data->setNull();
+  }
+
+ private:
   VariantRef addElement() const {
     return VariantRef(_pool, variantAddElement(_data, _pool));
   }
@@ -354,39 +395,6 @@ class VariantRef : public VariantRefBase<VariantData>,
     return VariantRef(_pool, variantGetOrAddMember(_data, key, _pool));
   }
 
-  FORCE_INLINE void remove(size_t index) const {
-    if (_data)
-      _data->remove(index);
-  }
-  // remove(char*) const
-  // remove(const char*) const
-  // remove(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE typename enable_if<IsString<TChar *>::value>::type remove(
-      TChar *key) const {
-    if (_data)
-      _data->remove(adaptString(key));
-  }
-  // remove(const std::string&) const
-  // remove(const String&) const
-  template <typename TString>
-  FORCE_INLINE typename enable_if<IsString<TString>::value>::type remove(
-      const TString &key) const {
-    if (_data)
-      _data->remove(adaptString(key));
-  }
-
-  inline void link(VariantConstRef target) {
-    if (!_data)
-      return;
-    const VariantData *targetData = getData(target);
-    if (targetData)
-      _data->setPointer(targetData);
-    else
-      _data->setNull();
-  }
-
- private:
   MemoryPool *_pool;
 
   friend MemoryPool *getPool(const VariantRef &variant) {
