@@ -18,49 +18,53 @@ class VariantAttorney {
     return client.accept(visitor);
   }
 
-  static VariantRef addElement(TClient client) {
+  static FORCE_INLINE VariantRef addElement(TClient client) {
     return client.addElement();
   }
 
-  static VariantRef getElement(TClient client, size_t index) {
+  static FORCE_INLINE VariantRef getElement(TClient client, size_t index) {
     return client.getElement(index);
   }
 
-  static VariantConstRef getElementConst(TClient client, size_t index) {
+  static FORCE_INLINE VariantConstRef getElementConst(TClient client,
+                                                      size_t index) {
     return client.getElementConst(index);
   }
 
-  static VariantRef getOrAddElement(TClient client, size_t index) {
+  static FORCE_INLINE VariantRef getOrAddElement(TClient client, size_t index) {
     return client.getOrAddElement(index);
   }
 
   template <typename TChar>
-  static VariantRef getMember(TClient client, TChar *key) {
+  static FORCE_INLINE VariantRef getMember(TClient client, TChar *key) {
     return client.getMember(key);
   }
 
   template <typename TString>
-  static VariantRef getMember(TClient client, const TString &key) {
+  static FORCE_INLINE VariantRef getMember(TClient client, const TString &key) {
     return client.getMember(key);
   }
 
   template <typename TChar>
-  static VariantConstRef getMemberConst(TClient client, TChar *key) {
+  static FORCE_INLINE VariantConstRef getMemberConst(TClient client,
+                                                     TChar *key) {
     return client.getMemberConst(key);
   }
 
   template <typename TString>
-  static VariantConstRef getMemberConst(TClient client, const TString &key) {
+  static FORCE_INLINE VariantConstRef getMemberConst(TClient client,
+                                                     const TString &key) {
     return client.getMemberConst(key);
   }
 
   template <typename TChar>
-  static VariantRef getOrAddMember(TClient client, TChar *key) {
+  static FORCE_INLINE VariantRef getOrAddMember(TClient client, TChar *key) {
     return client.getOrAddMember(key);
   }
 
   template <typename TString>
-  static VariantRef getOrAddMember(TClient client, const TString &key) {
+  static FORCE_INLINE VariantRef getOrAddMember(TClient client,
+                                                const TString &key) {
     return client.getOrAddMember(key);
   }
 };
