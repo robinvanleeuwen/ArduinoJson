@@ -151,38 +151,45 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
 
   template <typename TNestedKey>
   VariantConstRef getMemberConst(TNestedKey* key) const {
-    return VariantAttorney::getMemberConst(getUpstreamElementConst(), key);
+    return VariantAttorney<VariantConstRef>::getMemberConst(
+        getUpstreamElementConst(), key);
   }
 
   template <typename TNestedKey>
   VariantConstRef getMemberConst(const TNestedKey& key) const {
-    return VariantAttorney::getMemberConst(getUpstreamElementConst(), key);
+    return VariantAttorney<VariantConstRef>::getMemberConst(
+        getUpstreamElementConst(), key);
   }
 
   template <typename TNestedKey>
   VariantRef getOrAddMember(TNestedKey* key) const {
-    return VariantAttorney::getOrAddMember(getOrAddUpstreamElement(), key);
+    return VariantAttorney<VariantRef>::getOrAddMember(
+        getOrAddUpstreamElement(), key);
   }
 
   template <typename TNestedKey>
   VariantRef getOrAddMember(const TNestedKey& key) const {
-    return VariantAttorney::getOrAddMember(getOrAddUpstreamElement(), key);
+    return VariantAttorney<VariantRef>::getOrAddMember(
+        getOrAddUpstreamElement(), key);
   }
 
   VariantRef addElement() const {
-    return VariantAttorney::addElement(getOrAddUpstreamElement());
+    return VariantAttorney<TArray>::addElement(getOrAddUpstreamElement());
   }
 
   VariantRef getElement(size_t index) const {
-    return VariantAttorney::getElement(getOrAddUpstreamElement(), index);
+    return VariantAttorney<TArray>::getElement(getOrAddUpstreamElement(),
+                                               index);
   }
 
   VariantConstRef getElementConst(size_t index) const {
-    return VariantAttorney::getElementConst(getUpstreamElementConst(), index);
+    return VariantAttorney<VariantConstRef>::getElementConst(
+        getUpstreamElementConst(), index);
   }
 
   VariantRef getOrAddElement(size_t index) const {
-    return VariantAttorney::getOrAddElement(getOrAddUpstreamElement(), index);
+    return VariantAttorney<VariantRef>::getOrAddElement(
+        getOrAddUpstreamElement(), index);
   }
 
   FORCE_INLINE void remove(size_t index) const {
@@ -206,15 +213,15 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
 
  private:
   FORCE_INLINE VariantRef getUpstreamElement() const {
-    return VariantAttorney::getElement(_array, _index);
+    return VariantAttorney<TArray>::getElement(_array, _index);
   }
 
   FORCE_INLINE VariantConstRef getUpstreamElementConst() const {
-    return VariantAttorney::getElementConst(_array, _index);
+    return VariantAttorney<TArray>::getElementConst(_array, _index);
   }
 
   FORCE_INLINE VariantRef getOrAddUpstreamElement() const {
-    return VariantAttorney::getOrAddElement(_array, _index);
+    return VariantAttorney<TArray>::getOrAddElement(_array, _index);
   }
 
   friend void convertToJson(const this_type& src, VariantRef dst) {

@@ -60,13 +60,16 @@ class VariantRefBase : public VariantTag {
 template <typename TObject, typename TStringRef>
 class MemberProxy;
 
+template <typename TClient>
+class VariantAttorney;
+
 class VariantConstRef : public VariantRefBase<const VariantData>,
                         public VariantOperators<VariantConstRef>,
                         public VariantShortcuts<VariantConstRef>,
                         public Visitable {
   typedef VariantRefBase<const VariantData> base_type;
 
-  friend class VariantAttorney;
+  friend class VariantAttorney<VariantConstRef>;
 
  public:
   VariantConstRef() : base_type(0) {}
@@ -183,7 +186,7 @@ class VariantRef : public VariantRefBase<VariantData>,
                    public Visitable {
   typedef VariantRefBase<VariantData> base_type;
 
-  friend class VariantAttorney;
+  friend class VariantAttorney<VariantRef>;
 
  public:
   // Intenal use only

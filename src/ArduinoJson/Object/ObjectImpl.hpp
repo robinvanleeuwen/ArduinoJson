@@ -13,41 +13,45 @@ template <typename TObject>
 template <typename TString>
 inline ArrayRef ObjectShortcuts<TObject>::createNestedArray(
     const TString& key) const {
-  return VariantAttorney::getOrAddMember(impl(), key).template to<ArrayRef>();
+  return VariantAttorney<TObject>::getOrAddMember(impl(), key)
+      .template to<ArrayRef>();
 }
 
 template <typename TObject>
 template <typename TChar>
 inline ArrayRef ObjectShortcuts<TObject>::createNestedArray(TChar* key) const {
-  return VariantAttorney::getOrAddMember(impl(), key).template to<ArrayRef>();
+  return VariantAttorney<TObject>::getOrAddMember(impl(), key)
+      .template to<ArrayRef>();
 }
 
 template <typename TObject>
 template <typename TString>
 inline ObjectRef ObjectShortcuts<TObject>::createNestedObject(
     const TString& key) const {
-  return VariantAttorney::getOrAddMember(impl(), key).template to<ObjectRef>();
+  return VariantAttorney<TObject>::getOrAddMember(impl(), key)
+      .template to<ObjectRef>();
 }
 
 template <typename TObject>
 template <typename TChar>
 inline ObjectRef ObjectShortcuts<TObject>::createNestedObject(
     TChar* key) const {
-  return VariantAttorney::getOrAddMember(impl(), key).template to<ObjectRef>();
+  return VariantAttorney<TObject>::getOrAddMember(impl(), key)
+      .template to<ObjectRef>();
 }
 
 template <typename TObject>
 template <typename TString>
 inline typename enable_if<IsString<TString>::value, bool>::type
 ObjectShortcuts<TObject>::containsKey(const TString& key) const {
-  return !VariantAttorney::getMemberConst(impl(), key).isUnbound();
+  return !VariantAttorney<TObject>::getMemberConst(impl(), key).isUnbound();
 }
 
 template <typename TObject>
 template <typename TChar>
 inline typename enable_if<IsString<TChar*>::value, bool>::type
 ObjectShortcuts<TObject>::containsKey(TChar* key) const {
-  return !VariantAttorney::getMemberConst(impl(), key).isUnbound();
+  return !VariantAttorney<TObject>::getMemberConst(impl(), key).isUnbound();
 }
 
 template <typename TObject>

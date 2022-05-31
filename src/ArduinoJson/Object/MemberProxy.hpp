@@ -163,15 +163,17 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
   }
 
   FORCE_INLINE VariantRef getElement(size_t index) const {
-    return getUpstreamMember().getElement(index);
+    return VariantAttorney<VariantRef>::getElement(getUpstreamMember(), index);
   }
 
   FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
-    return getUpstreamMemberConst().getElementConst(index);
+    return VariantAttorney<VariantConstRef>::getElementConst(
+        getUpstreamMemberConst(), index);
   }
 
   FORCE_INLINE VariantRef getOrAddElement(size_t index) const {
-    return getOrAddUpstreamMember().getOrAddElement(index);
+    return VariantAttorney<VariantRef>::getOrAddElement(
+        getOrAddUpstreamMember(), index);
   }
 
   // getMember(char*) const
@@ -179,14 +181,14 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
   // getMember(const __FlashStringHelper*) const
   template <typename TChar>
   FORCE_INLINE VariantRef getMember(TChar *key) const {
-    return getUpstreamMember().getMember(key);
+    return VariantAttorney<VariantRef>::getMember(getUpstreamMember(), key);
   }
 
   // getMember(const std::string&) const
   // getMember(const String&) const
   template <typename TString>
   FORCE_INLINE VariantRef getMember(const TString &key) const {
-    return getUpstreamMember().getMember(key);
+    return VariantAttorney<VariantRef>::getMember(getUpstreamMember(), key);
   }
 
   // getMemberConst(char*) const
@@ -194,14 +196,16 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
   // getMemberConst(const __FlashStringHelper*) const
   template <typename TChar>
   FORCE_INLINE VariantConstRef getMemberConst(TChar *key) const {
-    return VariantAttorney::getMemberConst(getUpstreamMemberConst(), key);
+    return VariantAttorney<VariantConstRef>::getMemberConst(
+        getUpstreamMemberConst(), key);
   }
 
   // getMemberConst(const std::string&) const
   // getMemberConst(const String&) const
   template <typename TString>
   FORCE_INLINE VariantConstRef getMemberConst(const TString &key) const {
-    return VariantAttorney::getMemberConst(getUpstreamMemberConst(), key);
+    return VariantAttorney<VariantConstRef>::getMemberConst(
+        getUpstreamMemberConst(), key);
   }
 
   // getOrAddMember(char*) const
@@ -209,27 +213,29 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
   // getOrAddMember(const __FlashStringHelper*) const
   template <typename TChar>
   FORCE_INLINE VariantRef getOrAddMember(TChar *key) const {
-    return VariantAttorney::getOrAddMember(getOrAddUpstreamMember(), key);
+    return VariantAttorney<VariantRef>::getOrAddMember(getOrAddUpstreamMember(),
+                                                       key);
   }
 
   // getOrAddMember(const std::string&) const
   // getOrAddMember(const String&) const
   template <typename TString>
   FORCE_INLINE VariantRef getOrAddMember(const TString &key) const {
-    return VariantAttorney::getOrAddMember(getOrAddUpstreamMember(), key);
+    return VariantAttorney<VariantRef>::getOrAddMember(getOrAddUpstreamMember(),
+                                                       key);
   }
 
  private:
   FORCE_INLINE VariantRef getUpstreamMember() const {
-    return VariantAttorney::getMember(_object, _key);
+    return VariantAttorney<TObject>::getMember(_object, _key);
   }
 
   FORCE_INLINE VariantConstRef getUpstreamMemberConst() const {
-    return VariantAttorney::getMemberConst(_object, _key);
+    return VariantAttorney<TObject>::getMemberConst(_object, _key);
   }
 
   FORCE_INLINE VariantRef getOrAddUpstreamMember() const {
-    return VariantAttorney::getOrAddMember(_object, _key);
+    return VariantAttorney<TObject>::getOrAddMember(_object, _key);
   }
 
   friend void convertToJson(const this_type &src, VariantRef dst) {

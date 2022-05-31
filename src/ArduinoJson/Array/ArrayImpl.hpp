@@ -12,12 +12,12 @@ namespace ARDUINOJSON_NAMESPACE {
 
 template <typename TArray>
 inline ArrayRef ArrayShortcuts<TArray>::createNestedArray() const {
-  return VariantAttorney::addElement(impl()).template to<ArrayRef>();
+  return VariantAttorney<TArray>::addElement(impl()).template to<ArrayRef>();
 }
 
 template <typename TArray>
 inline ObjectRef ArrayShortcuts<TArray>::createNestedObject() const {
-  return VariantAttorney::addElement(impl()).template to<ObjectRef>();
+  return VariantAttorney<TArray>::addElement(impl()).template to<ObjectRef>();
 }
 
 template <typename TArray>
@@ -34,13 +34,13 @@ inline VariantRef ArrayShortcuts<TArray>::add() const {
 template <typename TArray>
 template <typename T>
 inline bool ArrayShortcuts<TArray>::add(const T &value) const {
-  return VariantAttorney::addElement(impl()).set(value);
+  return VariantAttorney<TArray>::addElement(impl()).set(value);
 }
 
 template <typename TArray>
 template <typename T>
 inline bool ArrayShortcuts<TArray>::add(T *value) const {
-  return VariantAttorney::addElement(impl()).set(value);
+  return VariantAttorney<TArray>::addElement(impl()).set(value);
 }
 
 }  // namespace ARDUINOJSON_NAMESPACE

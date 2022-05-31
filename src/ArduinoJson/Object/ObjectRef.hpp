@@ -153,7 +153,7 @@ class ObjectRef : public ObjectRefBase<CollectionData>,
                   public Visitable {
   typedef ObjectRefBase<CollectionData> base_type;
 
-  friend class VariantAttorney;
+  friend class VariantAttorney<ObjectRef>;
 
  public:
   typedef ObjectIterator iterator;
