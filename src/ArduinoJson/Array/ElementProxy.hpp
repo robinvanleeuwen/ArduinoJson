@@ -5,6 +5,7 @@
 #pragma once
 
 #include <ArduinoJson/Configuration.hpp>
+#include <ArduinoJson/Variant/VariantAttorney.hpp>
 #include <ArduinoJson/Variant/VariantOperators.hpp>
 #include <ArduinoJson/Variant/VariantShortcuts.hpp>
 #include <ArduinoJson/Variant/VariantTo.hpp>
@@ -150,38 +151,38 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
 
   template <typename TNestedKey>
   VariantConstRef getMemberConst(TNestedKey* key) const {
-    return getUpstreamElementConst().getMemberConst(key);
+    return VariantAttorney::getMemberConst(getUpstreamElementConst(), key);
   }
 
   template <typename TNestedKey>
   VariantConstRef getMemberConst(const TNestedKey& key) const {
-    return getUpstreamElementConst().getMemberConst(key);
+    return VariantAttorney::getMemberConst(getUpstreamElementConst(), key);
   }
 
   template <typename TNestedKey>
   VariantRef getOrAddMember(TNestedKey* key) const {
-    return getOrAddUpstreamElement().getOrAddMember(key);
+    return VariantAttorney::getOrAddMember(getOrAddUpstreamElement(), key);
   }
 
   template <typename TNestedKey>
   VariantRef getOrAddMember(const TNestedKey& key) const {
-    return getOrAddUpstreamElement().getOrAddMember(key);
+    return VariantAttorney::getOrAddMember(getOrAddUpstreamElement(), key);
   }
 
   VariantRef addElement() const {
-    return getOrAddUpstreamElement().addElement();
+    return VariantAttorney::addElement(getOrAddUpstreamElement());
   }
 
   VariantRef getElement(size_t index) const {
-    return getOrAddUpstreamElement().getElement(index);
+    return VariantAttorney::getElement(getOrAddUpstreamElement(), index);
   }
 
   VariantConstRef getElementConst(size_t index) const {
-    return getUpstreamElementConst().getElementConst(index);
+    return VariantAttorney::getElementConst(getUpstreamElementConst(), index);
   }
 
   VariantRef getOrAddElement(size_t index) const {
-    return getOrAddUpstreamElement().getOrAddElement(index);
+    return VariantAttorney::getOrAddElement(getOrAddUpstreamElement(), index);
   }
 
   FORCE_INLINE void remove(size_t index) const {
@@ -205,15 +206,15 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
 
  private:
   FORCE_INLINE VariantRef getUpstreamElement() const {
-    return _array.getElement(_index);
+    return VariantAttorney::getElement(_array, _index);
   }
 
   FORCE_INLINE VariantConstRef getUpstreamElementConst() const {
-    return _array.getElementConst(_index);
+    return VariantAttorney::getElementConst(_array, _index);
   }
 
   FORCE_INLINE VariantRef getOrAddUpstreamElement() const {
-    return _array.getOrAddElement(_index);
+    return VariantAttorney::getOrAddElement(_array, _index);
   }
 
   friend void convertToJson(const this_type& src, VariantRef dst) {

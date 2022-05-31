@@ -153,10 +153,7 @@ class ObjectRef : public ObjectRefBase<CollectionData>,
                   public Visitable {
   typedef ObjectRefBase<CollectionData> base_type;
 
-  friend class ObjectShortcuts<ObjectRef>;
-
-  template <typename TObject, typename TStringRef>
-  friend class MemberProxy;
+  friend class VariantAttorney;
 
  public:
   typedef ObjectIterator iterator;

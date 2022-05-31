@@ -7,6 +7,7 @@
 #include <ArduinoJson/Configuration.hpp>
 #include <ArduinoJson/Polyfills/type_traits.hpp>
 #include <ArduinoJson/Variant/Converter.hpp>
+#include <ArduinoJson/Variant/VariantAttorney.hpp>
 #include <ArduinoJson/Variant/VariantOperators.hpp>
 #include <ArduinoJson/Variant/VariantRef.hpp>
 #include <ArduinoJson/Variant/VariantShortcuts.hpp>
@@ -193,14 +194,14 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
   // getMemberConst(const __FlashStringHelper*) const
   template <typename TChar>
   FORCE_INLINE VariantConstRef getMemberConst(TChar *key) const {
-    return getUpstreamMemberConst().getMemberConst(key);
+    return VariantAttorney::getMemberConst(getUpstreamMemberConst(), key);
   }
 
   // getMemberConst(const std::string&) const
   // getMemberConst(const String&) const
   template <typename TString>
   FORCE_INLINE VariantConstRef getMemberConst(const TString &key) const {
-    return getUpstreamMemberConst().getMemberConst(key);
+    return VariantAttorney::getMemberConst(getUpstreamMemberConst(), key);
   }
 
   // getOrAddMember(char*) const
@@ -208,27 +209,27 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
   // getOrAddMember(const __FlashStringHelper*) const
   template <typename TChar>
   FORCE_INLINE VariantRef getOrAddMember(TChar *key) const {
-    return getOrAddUpstreamMember().getOrAddMember(key);
+    return VariantAttorney::getOrAddMember(getOrAddUpstreamMember(), key);
   }
 
   // getOrAddMember(const std::string&) const
   // getOrAddMember(const String&) const
   template <typename TString>
   FORCE_INLINE VariantRef getOrAddMember(const TString &key) const {
-    return getOrAddUpstreamMember().getOrAddMember(key);
+    return VariantAttorney::getOrAddMember(getOrAddUpstreamMember(), key);
   }
 
  private:
   FORCE_INLINE VariantRef getUpstreamMember() const {
-    return _object.getMember(_key);
+    return VariantAttorney::getMember(_object, _key);
   }
 
   FORCE_INLINE VariantConstRef getUpstreamMemberConst() const {
-    return _object.getMemberConst(_key);
+    return VariantAttorney::getMemberConst(_object, _key);
   }
 
   FORCE_INLINE VariantRef getOrAddUpstreamMember() const {
-    return _object.getOrAddMember(_key);
+    return VariantAttorney::getOrAddMember(_object, _key);
   }
 
   friend void convertToJson(const this_type &src, VariantRef dst) {

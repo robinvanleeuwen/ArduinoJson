@@ -13,41 +13,41 @@ template <typename TObject>
 template <typename TString>
 inline ArrayRef ObjectShortcuts<TObject>::createNestedArray(
     const TString& key) const {
-  return impl()->getOrAddMember(key).template to<ArrayRef>();
+  return VariantAttorney::getOrAddMember(impl(), key).template to<ArrayRef>();
 }
 
 template <typename TObject>
 template <typename TChar>
 inline ArrayRef ObjectShortcuts<TObject>::createNestedArray(TChar* key) const {
-  return impl()->getOrAddMember(key).template to<ArrayRef>();
+  return VariantAttorney::getOrAddMember(impl(), key).template to<ArrayRef>();
 }
 
 template <typename TObject>
 template <typename TString>
 inline ObjectRef ObjectShortcuts<TObject>::createNestedObject(
     const TString& key) const {
-  return impl()->getOrAddMember(key).template to<ObjectRef>();
+  return VariantAttorney::getOrAddMember(impl(), key).template to<ObjectRef>();
 }
 
 template <typename TObject>
 template <typename TChar>
 inline ObjectRef ObjectShortcuts<TObject>::createNestedObject(
     TChar* key) const {
-  return impl()->getOrAddMember(key).template to<ObjectRef>();
+  return VariantAttorney::getOrAddMember(impl(), key).template to<ObjectRef>();
 }
 
 template <typename TObject>
 template <typename TString>
 inline typename enable_if<IsString<TString>::value, bool>::type
 ObjectShortcuts<TObject>::containsKey(const TString& key) const {
-  return !impl()->getMemberConst(key).isUnbound();
+  return !VariantAttorney::getMemberConst(impl(), key).isUnbound();
 }
 
 template <typename TObject>
 template <typename TChar>
 inline typename enable_if<IsString<TChar*>::value, bool>::type
 ObjectShortcuts<TObject>::containsKey(TChar* key) const {
-  return !impl()->getMemberConst(key).isUnbound();
+  return !VariantAttorney::getMemberConst(impl(), key).isUnbound();
 }
 
 template <typename TObject>
@@ -55,7 +55,7 @@ template <typename TString>
 inline typename enable_if<IsString<TString*>::value,
                           MemberProxy<TObject, TString*> >::type
 ObjectShortcuts<TObject>::operator[](TString* key) const {
-  return MemberProxy<TObject, TString*>(*impl(), key);
+  return MemberProxy<TObject, TString*>(impl(), key);
 }
 
 template <typename TObject>
@@ -63,7 +63,7 @@ template <typename TString>
 inline typename enable_if<IsString<TString>::value,
                           MemberProxy<TObject, TString> >::type
 ObjectShortcuts<TObject>::operator[](const TString& key) const {
-  return MemberProxy<TObject, TString>(*impl(), key);
+  return MemberProxy<TObject, TString>(impl(), key);
 }
 
 }  // namespace ARDUINOJSON_NAMESPACE

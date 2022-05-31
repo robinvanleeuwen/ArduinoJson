@@ -121,8 +121,7 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
                  public Visitable {
   typedef ArrayRefBase<CollectionData> base_type;
 
-  friend class ArrayShortcuts<ArrayRef>;
-  friend class ElementProxy<ArrayRef>;
+  friend class VariantAttorney;
 
  public:
   typedef ArrayIterator iterator;

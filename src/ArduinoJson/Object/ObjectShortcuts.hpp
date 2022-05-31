@@ -66,8 +66,8 @@ class ObjectShortcuts {
   ObjectRef createNestedObject(TChar *key) const;
 
  private:
-  const TObject *impl() const {
-    return static_cast<const TObject *>(this);
+  const TObject &impl() const {
+    return *static_cast<const TObject *>(this);
   }
 };
 }  // namespace ARDUINOJSON_NAMESPACE

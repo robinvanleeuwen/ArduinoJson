@@ -66,13 +66,7 @@ class VariantConstRef : public VariantRefBase<const VariantData>,
                         public Visitable {
   typedef VariantRefBase<const VariantData> base_type;
 
-  template <typename TObject, typename TStringRef>
-  friend class MemberProxy;
-  template <typename TArray>
-  friend class ElementProxy;
-  friend class ArrayShortcuts<VariantConstRef>;
-  friend class ObjectShortcuts<VariantConstRef>;
-  friend class VariantShortcuts<VariantConstRef>;
+  friend class VariantAttorney;
 
  public:
   VariantConstRef() : base_type(0) {}
@@ -189,13 +183,7 @@ class VariantRef : public VariantRefBase<VariantData>,
                    public Visitable {
   typedef VariantRefBase<VariantData> base_type;
 
-  template <typename TObject, typename TStringRef>
-  friend class MemberProxy;
-  template <typename TArray>
-  friend class ElementProxy;
-  friend class ArrayShortcuts<VariantRef>;
-  friend class ObjectShortcuts<VariantRef>;
-  friend class VariantShortcuts<VariantRef>;
+  friend class VariantAttorney;
 
  public:
   // Intenal use only
