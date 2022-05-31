@@ -174,7 +174,7 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
   }
 
   VariantRef addElement() const {
-    return VariantAttorney<TArray>::addElement(getOrAddUpstreamElement());
+    return VariantAttorney<VariantRef>::addElement(getOrAddUpstreamElement());
   }
 
   VariantRef getElement(size_t index) const {

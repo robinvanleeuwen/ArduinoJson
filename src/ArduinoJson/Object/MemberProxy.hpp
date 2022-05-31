@@ -159,7 +159,7 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
   }
 
   FORCE_INLINE VariantRef addElement() const {
-    return getOrAddUpstreamMember().addElement();
+    return VariantAttorney<VariantRef>::addElement(getOrAddUpstreamMember());
   }
 
   FORCE_INLINE VariantRef getElement(size_t index) const {

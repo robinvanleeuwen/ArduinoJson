@@ -28,7 +28,7 @@ inline ElementProxy<TArray> ArrayShortcuts<TArray>::operator[](
 
 template <typename TArray>
 inline VariantRef ArrayShortcuts<TArray>::add() const {
-  return impl().addElement();
+  return VariantAttorney<TArray>::addElement(impl());
 }
 
 template <typename TArray>
