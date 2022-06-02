@@ -24,6 +24,8 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
                      public VariantTag {
   typedef ElementProxy<TArray> this_type;
 
+  friend class VariantAttorney<ElementProxy<TArray> >;
+
  public:
   typedef VariantRef variant_type;
 
@@ -139,6 +141,26 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
     return getUpstreamElementConst().memoryUsage();
   }
 
+  FORCE_INLINE void remove(size_t index) const {
+    getUpstreamElement().remove(index);
+  }
+  // remove(char*) const
+  // remove(const char*) const
+  // remove(const __FlashStringHelper*) const
+  template <typename TChar>
+  FORCE_INLINE typename enable_if<IsString<TChar*>::value>::type remove(
+      TChar* key) const {
+    getUpstreamElement().remove(key);
+  }
+  // remove(const std::string&) const
+  // remove(const String&) const
+  template <typename TString>
+  FORCE_INLINE typename enable_if<IsString<TString>::value>::type remove(
+      const TString& key) const {
+    getUpstreamElement().remove(key);
+  }
+
+ protected:
   template <typename TNestedKey>
   VariantRef getMember(TNestedKey* key) const {
     return getUpstreamElement().getMember(key);
@@ -190,25 +212,6 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
   VariantRef getOrAddElement(size_t index) const {
     return VariantAttorney<VariantRef>::getOrAddElement(
         getOrAddUpstreamElement(), index);
-  }
-
-  FORCE_INLINE void remove(size_t index) const {
-    getUpstreamElement().remove(index);
-  }
-  // remove(char*) const
-  // remove(const char*) const
-  // remove(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE typename enable_if<IsString<TChar*>::value>::type remove(
-      TChar* key) const {
-    getUpstreamElement().remove(key);
-  }
-  // remove(const std::string&) const
-  // remove(const String&) const
-  template <typename TString>
-  FORCE_INLINE typename enable_if<IsString<TString>::value>::type remove(
-      const TString& key) const {
-    getUpstreamElement().remove(key);
   }
 
  private:
