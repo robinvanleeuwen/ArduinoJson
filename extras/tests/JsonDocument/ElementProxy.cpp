@@ -9,7 +9,6 @@ using namespace ARDUINOJSON_NAMESPACE;
 
 TEST_CASE("ElementProxy::add()") {
   DynamicJsonDocument doc(4096);
-  doc.addElement();
   ElementProxy<JsonDocument &> ep = doc[0];
 
   SECTION("add(int)") {
@@ -35,7 +34,6 @@ TEST_CASE("ElementProxy::add()") {
 
 TEST_CASE("ElementProxy::clear()") {
   DynamicJsonDocument doc(4096);
-  doc.addElement();
   ElementProxy<JsonDocument &> ep = doc[0];
 
   SECTION("size goes back to zero") {
@@ -95,7 +93,6 @@ TEST_CASE("ElementProxy::operator==()") {
 
 TEST_CASE("ElementProxy::remove()") {
   DynamicJsonDocument doc(4096);
-  doc.addElement();
   ElementProxy<JsonDocument &> ep = doc[0];
 
   SECTION("remove(int)") {
@@ -168,7 +165,6 @@ TEST_CASE("ElementProxy::set()") {
 
 TEST_CASE("ElementProxy::size()") {
   DynamicJsonDocument doc(4096);
-  doc.addElement();
   ElementProxy<JsonDocument &> ep = doc[0];
 
   SECTION("returns 0") {
@@ -190,7 +186,6 @@ TEST_CASE("ElementProxy::size()") {
 
 TEST_CASE("ElementProxy::memoryUsage()") {
   DynamicJsonDocument doc(4096);
-  doc.addElement();
   ElementProxy<JsonDocument &> ep = doc[0];
 
   SECTION("returns 0 for null") {
