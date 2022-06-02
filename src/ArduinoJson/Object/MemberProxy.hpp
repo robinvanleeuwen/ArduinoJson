@@ -27,6 +27,8 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
                     public VariantTag {
   typedef MemberProxy<TObject, TStringRef> this_type;
 
+  friend class VariantAttorney<MemberProxy<TObject, TStringRef> >;
+
  public:
   typedef VariantRef variant_type;
 
@@ -158,6 +160,7 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
     return getOrAddUpstreamMember().set(value);
   }
 
+protected:
   FORCE_INLINE VariantRef addElement() const {
     return VariantAttorney<VariantRef>::addElement(getOrAddUpstreamMember());
   }
