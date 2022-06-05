@@ -12,8 +12,11 @@
 
 namespace ARDUINOJSON_NAMESPACE {
 
-template <typename T1, typename T2>
-CompareResult compare(const T1 &lhs, const T2 &rhs);  // VariantCompare.cpp
+class VariantConstRef;
+
+template <typename T2>
+CompareResult compare(VariantConstRef lhs,
+                      const T2 &rhs);  // VariantCompare.cpp
 
 template <typename TVariant>
 struct VariantOperators {

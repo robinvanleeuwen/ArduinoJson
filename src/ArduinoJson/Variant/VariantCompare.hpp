@@ -128,12 +128,10 @@ struct RawComparer : ComparerBase {
   }
 };
 
-template <typename T>
-struct Comparer<T, typename enable_if<IsVisitable<T>::value>::type>
-    : ComparerBase {
-  const T *rhs;  // TODO: should be a VariantConstRef
+struct VariantComparer : ComparerBase {
+  VariantConstRef rhs;
 
-  explicit Comparer(const T &value) : rhs(&value) {}
+  explicit VariantComparer(VariantConstRef value) : rhs(value) {}
 
   CompareResult visitArray(const CollectionData &lhs) {
     ArrayComparer comparer(lhs);
@@ -183,7 +181,7 @@ struct Comparer<T, typename enable_if<IsVisitable<T>::value>::type>
  private:
   template <typename TComparer>
   CompareResult accept(TComparer &comparer) {
-    CompareResult reversedResult = rhs->accept(comparer);
+    CompareResult reversedResult = rhs.accept(comparer);
     switch (reversedResult) {
       case COMPARE_RESULT_GREATER:
         return COMPARE_RESULT_LESS;
@@ -195,8 +193,15 @@ struct Comparer<T, typename enable_if<IsVisitable<T>::value>::type>
   }
 };
 
-template <typename T1, typename T2>
-CompareResult compare(const T1 &lhs, const T2 &rhs) {
+template <typename T>
+struct Comparer<T, typename enable_if<IsVisitable<T>::value>::type>
+    : VariantComparer {
+  explicit Comparer(const T &value)
+      : VariantComparer(value.operator VariantConstRef()) {}
+};
+
+template <typename T2>
+CompareResult compare(VariantConstRef lhs, const T2 &rhs) {
   Comparer<T2> comparer(rhs);
   return lhs.accept(comparer);
 }
