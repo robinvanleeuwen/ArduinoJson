@@ -14,9 +14,9 @@ namespace ARDUINOJSON_NAMESPACE {
 
 class VariantConstRef;
 
-template <typename T2>
+template <typename T>
 CompareResult compare(VariantConstRef lhs,
-                      const T2 &rhs);  // VariantCompare.cpp
+                      const T &rhs);  // VariantCompare.cpp
 
 template <typename TVariant>
 struct VariantOperators {

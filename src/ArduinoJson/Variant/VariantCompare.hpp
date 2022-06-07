@@ -200,9 +200,9 @@ struct Comparer<T, typename enable_if<IsVisitable<T>::value>::type>
       : VariantComparer(value.operator VariantConstRef()) {}
 };
 
-template <typename T2>
-CompareResult compare(VariantConstRef lhs, const T2 &rhs) {
-  Comparer<T2> comparer(rhs);
+template <typename T>
+CompareResult compare(VariantConstRef lhs, const T &rhs) {
+  Comparer<T> comparer(rhs);
   return lhs.accept(comparer);
 }
 
