@@ -4,8 +4,10 @@
 
 #pragma once
 
+#include <ArduinoJson/Polyfills/attributes.hpp>
 #include <ArduinoJson/Variant/VariantTo.hpp>
 #include "VariantRef.hpp"
+
 
 namespace ARDUINOJSON_NAMESPACE {
 
@@ -13,6 +15,14 @@ namespace ARDUINOJSON_NAMESPACE {
 template <typename TClient>
 class VariantAttorney {
  public:
+  static FORCE_INLINE VariantData *getData(TClient client) {
+    return client.getData();
+  }
+
+  static FORCE_INLINE const VariantData *getDataConst(TClient client) {
+    return client.getDataConst();
+  }
+
   static FORCE_INLINE VariantRef addElement(TClient client) {
     return client.addElement();
   }

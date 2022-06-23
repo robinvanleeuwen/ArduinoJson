@@ -160,7 +160,7 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
     return getOrAddUpstreamMember().set(value);
   }
 
-protected:
+ protected:
   FORCE_INLINE VariantRef addElement() const {
     return VariantAttorney<VariantRef>::addElement(getOrAddUpstreamMember());
   }
@@ -245,8 +245,8 @@ protected:
     dst.set(src.getUpstreamMemberConst());
   }
 
-  friend const VariantData *getData(const MemberProxy &proxy) {
-    return getData(proxy.getUpstreamMemberConst());
+  const VariantData *getDataConst() const {
+    return VariantAttorney<TObject>::getDataConst(getUpstreamMemberConst());
   }
 
   TObject _object;

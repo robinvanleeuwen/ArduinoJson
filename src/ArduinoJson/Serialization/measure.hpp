@@ -12,7 +12,8 @@ template <template <typename> class TSerializer>
 size_t measure(VariantConstRef source) {
   DummyWriter dp;
   TSerializer<DummyWriter> serializer(dp);
-  return variantAccept(getData(source), serializer);
+  return variantAccept(VariantAttorney<VariantConstRef>::getDataConst(source),
+                       serializer);
 }
 
 }  // namespace ARDUINOJSON_NAMESPACE

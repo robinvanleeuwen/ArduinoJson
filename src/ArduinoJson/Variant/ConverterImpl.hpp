@@ -39,7 +39,7 @@ struct Converter<
     T, typename enable_if<is_integral<T>::value && !is_same<bool, T>::value &&
                           !is_same<char, T>::value>::type> {
   static void toJson(T src, VariantRef dst) {
-    VariantData* data = getData(dst);
+    VariantData* data = VariantAttorney<VariantRef>::getData(dst);
     ARDUINOJSON_ASSERT_INTEGER_TYPE_IS_SUPPORTED(T);
     if (data)
       data->setInteger(src);
@@ -47,12 +47,14 @@ struct Converter<
 
   static T fromJson(VariantConstRef src) {
     ARDUINOJSON_ASSERT_INTEGER_TYPE_IS_SUPPORTED(T);
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data ? data->resolve()->asIntegral<T>() : T();
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data && data->resolve()->isInteger<T>();
   }
 };
@@ -64,12 +66,14 @@ struct Converter<T, typename enable_if<is_enum<T>::value>::type> {
   }
 
   static T fromJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data ? static_cast<T>(data->resolve()->asIntegral<int>()) : T();
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data && data->resolve()->isInteger<int>();
   }
 };
@@ -77,18 +81,20 @@ struct Converter<T, typename enable_if<is_enum<T>::value>::type> {
 template <>
 struct Converter<bool> {
   static void toJson(bool src, VariantRef dst) {
-    VariantData* data = getData(dst);
+    VariantData* data = VariantAttorney<VariantRef>::getData(dst);
     if (data)
       data->setBoolean(src);
   }
 
   static bool fromJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data ? data->resolve()->asBoolean() : false;
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data && data->resolve()->isBoolean();
   }
 };
@@ -96,18 +102,20 @@ struct Converter<bool> {
 template <typename T>
 struct Converter<T, typename enable_if<is_floating_point<T>::value>::type> {
   static void toJson(T src, VariantRef dst) {
-    VariantData* data = getData(dst);
+    VariantData* data = VariantAttorney<VariantRef>::getData(dst);
     if (data)
       data->setFloat(static_cast<Float>(src));
   }
 
   static T fromJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data ? data->resolve()->asFloat<T>() : 0;
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data && data->resolve()->isFloat();
   }
 };
@@ -115,17 +123,20 @@ struct Converter<T, typename enable_if<is_floating_point<T>::value>::type> {
 template <>
 struct Converter<const char*> {
   static void toJson(const char* src, VariantRef dst) {
-    variantSetString(getData(dst), adaptString(src), getPool(dst),
+    variantSetString(VariantAttorney<VariantRef>::getData(dst),
+                     adaptString(src), getPool(dst),
                      getStringStoragePolicy(src));
   }
 
   static const char* fromJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data ? data->resolve()->asString().c_str() : 0;
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data && data->resolve()->isString();
   }
 };
@@ -138,12 +149,14 @@ struct Converter<String> {
   }
 
   static String fromJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data ? data->resolve()->asString() : 0;
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data && data->resolve()->isString();
   }
 };
@@ -151,7 +164,7 @@ struct Converter<String> {
 template <typename T>
 inline typename enable_if<IsString<T>::value, bool>::type convertToJson(
     const T& src, VariantRef dst) {
-  VariantData* data = getData(dst);
+  VariantData* data = VariantAttorney<VariantRef>::getData(dst);
   MemoryPool* pool = getPool(dst);
   return variantSetString(data, adaptString(src), pool,
                           getStringStoragePolicy(src));
@@ -160,7 +173,7 @@ inline typename enable_if<IsString<T>::value, bool>::type convertToJson(
 template <>
 struct Converter<SerializedValue<const char*> > {
   static void toJson(SerializedValue<const char*> src, VariantRef dst) {
-    VariantData* data = getData(dst);
+    VariantData* data = VariantAttorney<VariantRef>::getData(dst);
     if (data)
       data->setLinkedRaw(src);
   }
@@ -173,7 +186,7 @@ template <typename T>
 struct Converter<SerializedValue<T>,
                  typename enable_if<!is_same<const char*, T>::value>::type> {
   static void toJson(SerializedValue<T> src, VariantRef dst) {
-    VariantData* data = getData(dst);
+    VariantData* data = VariantAttorney<VariantRef>::getData(dst);
     MemoryPool* pool = getPool(dst);
     if (data)
       data->storeOwnedRaw(src, pool);
@@ -191,7 +204,8 @@ struct Converter<decltype(nullptr)> {
     return nullptr;
   }
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data == 0 || data->resolve()->isNull();
   }
 };
@@ -242,7 +256,7 @@ class MemoryPoolPrint : public Print {
 
 inline void convertToJson(const ::Printable& src, VariantRef dst) {
   MemoryPool* pool = getPool(dst);
-  VariantData* data = getData(dst);
+  VariantData* data = VariantAttorney<VariantRef>::getData(dst);
   if (!pool || !data)
     return;
   MemoryPoolPrint print(pool);

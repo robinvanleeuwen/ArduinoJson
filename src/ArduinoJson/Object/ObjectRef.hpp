@@ -21,7 +21,7 @@ template <typename TData>
 class ObjectRefBase {
  public:
   operator VariantConstRef() const {
-    return VariantConstRef(getVariantData());
+    return VariantConstRef(getDataConst());
   }
 
   FORCE_INLINE bool isNull() const {
@@ -37,7 +37,7 @@ class ObjectRefBase {
   }
 
   FORCE_INLINE size_t nesting() const {
-    return variantNesting(getVariantData());
+    return variantNesting(getDataConst());
   }
 
   FORCE_INLINE size_t size() const {
@@ -45,13 +45,9 @@ class ObjectRefBase {
   }
 
  protected:
-  const VariantData* getVariantData() const {
+  const VariantData* getDataConst() const {
     const void* data = _data;  // prevent warning cast-align
     return reinterpret_cast<const VariantData*>(data);
-  }
-
-  friend const VariantData* getData(ObjectRefBase array) {
-    return array.getVariantData();
   }
 
   ObjectRefBase(TData* data) : _data(data) {}
@@ -274,15 +270,19 @@ class ObjectRef : public ObjectRefBase<CollectionData>,
 template <>
 struct Converter<ObjectConstRef> {
   static void toJson(VariantConstRef src, VariantRef dst) {
-    variantCopyFrom(getData(dst), getData(src), getPool(dst));
+    variantCopyFrom(VariantAttorney<VariantRef>::getData(dst),
+                    VariantAttorney<VariantConstRef>::getDataConst(src),
+                    getPool(dst));
   }
 
   static ObjectConstRef fromJson(VariantConstRef src) {
-    return ObjectConstRef(variantAsObject(getData(src)));
+    return ObjectConstRef(
+        variantAsObject(VariantAttorney<VariantConstRef>::getDataConst(src)));
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data && data->resolve()->isObject();
   }
 };
@@ -290,11 +290,13 @@ struct Converter<ObjectConstRef> {
 template <>
 struct Converter<ObjectRef> {
   static void toJson(VariantConstRef src, VariantRef dst) {
-    variantCopyFrom(getData(dst), getData(src), getPool(dst));
+    variantCopyFrom(VariantAttorney<VariantRef>::getData(dst),
+                    VariantAttorney<VariantConstRef>::getDataConst(src),
+                    getPool(dst));
   }
 
   static ObjectRef fromJson(VariantRef src) {
-    VariantData* data = getData(src);
+    VariantData* data = VariantAttorney<VariantRef>::getData(src);
     MemoryPool* pool = getPool(src);
     return ObjectRef(pool, data != 0 ? data->asObject() : 0);
   }
@@ -307,7 +309,8 @@ struct Converter<ObjectRef> {
   }
 
   static bool checkJson(VariantRef src) {
-    VariantData* data = getData(src);
+    const VariantData* data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return data && data->isObject();
   }
 };

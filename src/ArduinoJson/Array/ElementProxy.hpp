@@ -231,10 +231,6 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
     dst.set(src.getUpstreamElementConst());
   }
 
-  friend const VariantData* getData(const ElementProxy& proxy) {
-    return getData(proxy.getUpstreamElementConst());
-  }
-
   TArray _array;
   const size_t _index;
 };

@@ -339,8 +339,12 @@ class JsonDocument : public Visitable,
     return VariantRef(&_pool, _data.addElement(&_pool));
   }
 
-  friend const VariantData* getData(const JsonDocument& doc) {
-    return &doc._data;
+  FORCE_INLINE VariantData* getData() {
+    return &_data;
+  }
+
+  FORCE_INLINE const VariantData* getDataConst() const {
+    return &_data;
   }
 };
 

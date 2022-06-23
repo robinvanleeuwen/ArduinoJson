@@ -12,11 +12,13 @@
 #include <ArduinoJson/Polyfills/type_traits.hpp>
 #include <ArduinoJson/Strings/StringAdapters.hpp>
 #include <ArduinoJson/Variant/Converter.hpp>
+#include <ArduinoJson/Variant/VariantAttorney.hpp>
 #include <ArduinoJson/Variant/VariantFunctions.hpp>
 #include <ArduinoJson/Variant/VariantOperators.hpp>
 #include <ArduinoJson/Variant/VariantRef.hpp>
 #include <ArduinoJson/Variant/VariantShortcuts.hpp>
 #include <ArduinoJson/Variant/VariantTag.hpp>
+
 
 namespace ARDUINOJSON_NAMESPACE {
 
@@ -52,8 +54,8 @@ class VariantRefBase : public VariantTag {
   VariantRefBase(TData *data) : _data(data) {}
   TData *_data;
 
-  friend TData *getData(const VariantRefBase &variant) {
-    return variant._data;
+  const TData *getDataConst() {
+    return &_data;
   }
 };
 
@@ -311,7 +313,8 @@ class VariantRef : public VariantRefBase<VariantData>,
   inline void link(VariantConstRef target) {
     if (!_data)
       return;
-    const VariantData *targetData = getData(target);
+    const VariantData *targetData =
+        VariantAttorney<VariantConstRef>::getDataConst(target);
     if (targetData)
       _data->setPointer(targetData);
     else
@@ -396,7 +399,9 @@ class VariantRef : public VariantRefBase<VariantData>,
 template <>
 struct Converter<VariantRef> {
   static void toJson(VariantRef src, VariantRef dst) {
-    variantCopyFrom(getData(dst), getData(src), getPool(dst));
+    variantCopyFrom(VariantAttorney<VariantRef>::getDataConst(dst),
+                    VariantAttorney<VariantConstRef>::getData(src),
+                    getPool(dst));
   }
 
   static VariantRef fromJson(VariantRef src) {
@@ -407,7 +412,7 @@ struct Converter<VariantRef> {
       VariantConstRef);
 
   static bool checkJson(VariantRef src) {
-    VariantData *data = getData(src);
+    VariantData *data = VariantAttorney<VariantRef>::getData(src);
     return !!data;
   }
 
@@ -419,7 +424,9 @@ struct Converter<VariantRef> {
 template <>
 struct Converter<VariantConstRef> {
   static void toJson(VariantConstRef src, VariantRef dst) {
-    variantCopyFrom(getData(dst), getData(src), getPool(dst));
+    variantCopyFrom(VariantAttorney<VariantRef>::getData(dst),
+                    VariantAttorney<VariantConstRef>::getDataConst(src),
+                    getPool(dst));
   }
 
   static VariantConstRef fromJson(VariantConstRef src) {
@@ -427,7 +434,8 @@ struct Converter<VariantConstRef> {
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData *data = getData(src);
+    const VariantData *data =
+        VariantAttorney<VariantConstRef>::getDataConst(src);
     return !!data;
   }
 };
