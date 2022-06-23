@@ -13,11 +13,6 @@ namespace ARDUINOJSON_NAMESPACE {
 template <typename TClient>
 class VariantAttorney {
  public:
-  template <typename TVisitor>
-  typename TVisitor::result_type accept(TClient client, TVisitor &visitor) {
-    return client.accept(visitor);
-  }
-
   static FORCE_INLINE VariantRef addElement(TClient client) {
     return client.addElement();
   }
