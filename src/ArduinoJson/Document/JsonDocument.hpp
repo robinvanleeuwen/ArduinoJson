@@ -332,6 +332,10 @@ class JsonDocument : public Visitable,
  private:
   JsonDocument(const JsonDocument&);
   JsonDocument& operator=(const JsonDocument&);
+
+  friend const VariantData* getData(const JsonDocument& doc) {
+    return &doc._data;
+  }
 };
 
 inline void convertToJson(const JsonDocument& src, VariantRef dst) {

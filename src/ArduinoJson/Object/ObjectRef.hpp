@@ -47,6 +47,10 @@ class ObjectRefBase {
     return reinterpret_cast<const VariantData*>(data);
   }
 
+  friend const VariantData* getData(ObjectRefBase array) {
+    return array.getVariantData();
+  }
+
   ObjectRefBase(TData* data) : _data(data) {}
   TData* _data;
 };

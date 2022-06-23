@@ -129,9 +129,9 @@ struct RawComparer : ComparerBase {
 };
 
 struct VariantComparer : ComparerBase {
-  VariantConstRef rhs;
+  const VariantData *rhs;
 
-  explicit VariantComparer(VariantConstRef value) : rhs(value) {}
+  explicit VariantComparer(const VariantData *value) : rhs(value) {}
 
   CompareResult visitArray(const CollectionData &lhs) {
     ArrayComparer comparer(lhs);
@@ -181,7 +181,7 @@ struct VariantComparer : ComparerBase {
  private:
   template <typename TComparer>
   CompareResult accept(TComparer &comparer) {
-    CompareResult reversedResult = rhs.accept(comparer);
+    CompareResult reversedResult = variantAccept(rhs, comparer);
     switch (reversedResult) {
       case COMPARE_RESULT_GREATER:
         return COMPARE_RESULT_LESS;
@@ -196,14 +196,13 @@ struct VariantComparer : ComparerBase {
 template <typename T>
 struct Comparer<T, typename enable_if<IsVisitable<T>::value>::type>
     : VariantComparer {
-  explicit Comparer(const T &value)
-      : VariantComparer(value.operator VariantConstRef()) {}
+  explicit Comparer(const T &value) : VariantComparer(getData(value)) {}
 };
 
 template <typename T>
 CompareResult compare(VariantConstRef lhs, const T &rhs) {
   Comparer<T> comparer(rhs);
-  return lhs.accept(comparer);
+  return variantAccept(getData(lhs), comparer);
 }
 
 }  // namespace ARDUINOJSON_NAMESPACE

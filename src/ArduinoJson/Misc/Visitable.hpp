@@ -8,6 +8,7 @@
 
 namespace ARDUINOJSON_NAMESPACE {
 
+// TODO: remove or rename
 struct Visitable {
   // template<Visitor>
   // void accept(Visitor&) const;

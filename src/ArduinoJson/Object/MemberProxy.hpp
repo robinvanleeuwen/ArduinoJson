@@ -235,6 +235,10 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
     dst.set(src.getUpstreamMemberConst());
   }
 
+  friend const VariantData *getData(const MemberProxy &proxy) {
+    return getData(proxy.getUpstreamMemberConst());
+  }
+
   TObject _object;
   TStringRef _key;
 };

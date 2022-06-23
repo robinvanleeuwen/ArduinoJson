@@ -52,6 +52,10 @@ class ArrayRefBase {
     return reinterpret_cast<const VariantData*>(data);
   }
 
+  friend const VariantData* getData(ArrayRefBase array) {
+    return array.getVariantData();
+  }
+
   ArrayRefBase(TData* data) : _data(data) {}
   TData* _data;
 };
