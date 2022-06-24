@@ -7,6 +7,7 @@
 #include <ArduinoJson/Configuration.hpp>
 #include <ArduinoJson/Variant/VariantAttorney.hpp>
 #include <ArduinoJson/Variant/VariantOperators.hpp>
+#include <ArduinoJson/Variant/VariantRef.hpp>
 #include <ArduinoJson/Variant/VariantShortcuts.hpp>
 #include <ArduinoJson/Variant/VariantTo.hpp>
 
@@ -24,7 +25,7 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
                      public VariantTag {
   typedef ElementProxy<TArray> this_type;
 
-  friend class VariantAttorney<ElementProxy<TArray> >;
+  friend class VariantAttorney;
 
  public:
   typedef VariantRef variant_type;
@@ -160,73 +161,40 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
     getUpstreamElement().remove(key);
   }
 
+ private:
+  VariantRef getOrAddUpstreamElement() const {
+    return VariantRef(getPool(), getOrCreateData());
+  }
+
+  VariantRef getUpstreamElement() const {
+    return VariantRef(getPool(), getData());
+  }
+
+  VariantConstRef getUpstreamElementConst() const {
+    return VariantConstRef(getDataConst());
+  }
+
  protected:
-  template <typename TNestedKey>
-  VariantRef getMember(TNestedKey* key) const {
-    return getUpstreamElement().getMember(key);
+  FORCE_INLINE MemoryPool* getPool() const {
+    return VariantAttorney::getPool(_array);
   }
 
-  template <typename TNestedKey>
-  VariantRef getMember(const TNestedKey& key) const {
-    return getUpstreamElement().getMember(key);
+  FORCE_INLINE VariantData* getData() const {
+    VariantData* data = VariantAttorney::getData(_array);
+    return data ? data->getElement(_index) : 0;
   }
 
-  template <typename TNestedKey>
-  VariantConstRef getMemberConst(TNestedKey* key) const {
-    return VariantAttorney<VariantConstRef>::getMemberConst(
-        getUpstreamElementConst(), key);
+  FORCE_INLINE VariantData* getOrCreateData() const {
+    VariantData* data = VariantAttorney::getOrCreateData(_array);
+    return data ? data->getOrAddElement(_index, getPool()) : 0;
   }
 
-  template <typename TNestedKey>
-  VariantConstRef getMemberConst(const TNestedKey& key) const {
-    return VariantAttorney<VariantConstRef>::getMemberConst(
-        getUpstreamElementConst(), key);
-  }
-
-  template <typename TNestedKey>
-  VariantRef getOrAddMember(TNestedKey* key) const {
-    return VariantAttorney<VariantRef>::getOrAddMember(
-        getOrAddUpstreamElement(), key);
-  }
-
-  template <typename TNestedKey>
-  VariantRef getOrAddMember(const TNestedKey& key) const {
-    return VariantAttorney<VariantRef>::getOrAddMember(
-        getOrAddUpstreamElement(), key);
-  }
-
-  VariantRef addElement() const {
-    return VariantAttorney<VariantRef>::addElement(getOrAddUpstreamElement());
-  }
-
-  VariantRef getElement(size_t index) const {
-    return VariantAttorney<TArray>::getElement(getOrAddUpstreamElement(),
-                                               index);
-  }
-
-  VariantConstRef getElementConst(size_t index) const {
-    return VariantAttorney<VariantConstRef>::getElementConst(
-        getUpstreamElementConst(), index);
-  }
-
-  VariantRef getOrAddElement(size_t index) const {
-    return VariantAttorney<VariantRef>::getOrAddElement(
-        getOrAddUpstreamElement(), index);
+  FORCE_INLINE const VariantData* getDataConst() const {
+    const VariantData* data = VariantAttorney::getDataConst(_array);
+    return data ? data->getElement(_index) : 0;
   }
 
  private:
-  FORCE_INLINE VariantRef getUpstreamElement() const {
-    return VariantAttorney<TArray>::getElement(_array, _index);
-  }
-
-  FORCE_INLINE VariantConstRef getUpstreamElementConst() const {
-    return VariantAttorney<TArray>::getElementConst(_array, _index);
-  }
-
-  FORCE_INLINE VariantRef getOrAddUpstreamElement() const {
-    return VariantAttorney<TArray>::getOrAddElement(_array, _index);
-  }
-
   friend void convertToJson(const this_type& src, VariantRef dst) {
     dst.set(src.getUpstreamElementConst());
   }

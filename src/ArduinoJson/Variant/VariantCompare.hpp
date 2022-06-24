@@ -196,13 +196,14 @@ struct VariantComparer : ComparerBase {
 template <typename T>
 struct Comparer<T, typename enable_if<IsVisitable<T>::value>::type>
     : VariantComparer {
-  explicit Comparer(const T &value) : VariantComparer(getData(value)) {}
+  explicit Comparer(const T &value)
+      : VariantComparer(VariantAttorney::getDataConst(value)) {}
 };
 
 template <typename T>
 CompareResult compare(VariantConstRef lhs, const T &rhs) {
   Comparer<T> comparer(rhs);
-  return variantAccept(getData(lhs), comparer);
+  return variantAccept(VariantAttorney::getDataConst(lhs), comparer);
 }
 
 }  // namespace ARDUINOJSON_NAMESPACE

@@ -27,7 +27,7 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
                     public VariantTag {
   typedef MemberProxy<TObject, TStringRef> this_type;
 
-  friend class VariantAttorney<MemberProxy<TObject, TStringRef> >;
+  friend class VariantAttorney;
 
  public:
   typedef VariantRef variant_type;
@@ -161,92 +161,40 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
   }
 
  protected:
-  FORCE_INLINE VariantRef addElement() const {
-    return VariantAttorney<VariantRef>::addElement(getOrAddUpstreamMember());
+  MemoryPool *getPool() const {
+    return VariantAttorney::getPool(_object);
   }
 
-  FORCE_INLINE VariantRef getElement(size_t index) const {
-    return VariantAttorney<VariantRef>::getElement(getUpstreamMember(), index);
+  const VariantData *getDataConst() const {
+    const VariantData *data = VariantAttorney::getDataConst(_object);
+    return data ? data->getMember(adaptString(_key)) : 0;
   }
 
-  FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
-    return VariantAttorney<VariantConstRef>::getElementConst(
-        getUpstreamMemberConst(), index);
+  VariantData *getData() const {
+    VariantData *data = VariantAttorney::getData(_object);
+    return data ? data->getMember(adaptString(_key)) : 0;
   }
 
-  FORCE_INLINE VariantRef getOrAddElement(size_t index) const {
-    return VariantAttorney<VariantRef>::getOrAddElement(
-        getOrAddUpstreamMember(), index);
-  }
-
-  // getMember(char*) const
-  // getMember(const char*) const
-  // getMember(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE VariantRef getMember(TChar *key) const {
-    return VariantAttorney<VariantRef>::getMember(getUpstreamMember(), key);
-  }
-
-  // getMember(const std::string&) const
-  // getMember(const String&) const
-  template <typename TString>
-  FORCE_INLINE VariantRef getMember(const TString &key) const {
-    return VariantAttorney<VariantRef>::getMember(getUpstreamMember(), key);
-  }
-
-  // getMemberConst(char*) const
-  // getMemberConst(const char*) const
-  // getMemberConst(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE VariantConstRef getMemberConst(TChar *key) const {
-    return VariantAttorney<VariantConstRef>::getMemberConst(
-        getUpstreamMemberConst(), key);
-  }
-
-  // getMemberConst(const std::string&) const
-  // getMemberConst(const String&) const
-  template <typename TString>
-  FORCE_INLINE VariantConstRef getMemberConst(const TString &key) const {
-    return VariantAttorney<VariantConstRef>::getMemberConst(
-        getUpstreamMemberConst(), key);
-  }
-
-  // getOrAddMember(char*) const
-  // getOrAddMember(const char*) const
-  // getOrAddMember(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE VariantRef getOrAddMember(TChar *key) const {
-    return VariantAttorney<VariantRef>::getOrAddMember(getOrAddUpstreamMember(),
-                                                       key);
-  }
-
-  // getOrAddMember(const std::string&) const
-  // getOrAddMember(const String&) const
-  template <typename TString>
-  FORCE_INLINE VariantRef getOrAddMember(const TString &key) const {
-    return VariantAttorney<VariantRef>::getOrAddMember(getOrAddUpstreamMember(),
-                                                       key);
+  VariantData *getOrCreateData() const {
+    VariantData *data = VariantAttorney::getOrCreateData(_object);
+    return variantGetOrAddMember(data, _key, getPool());
   }
 
  private:
   FORCE_INLINE VariantRef getUpstreamMember() const {
-    return VariantAttorney<TObject>::getMember(_object, _key);
+    return VariantRef(getPool(), getData());
   }
 
   FORCE_INLINE VariantConstRef getUpstreamMemberConst() const {
-    return VariantAttorney<TObject>::getMemberConst(_object, _key);
+    return VariantConstRef(getDataConst());
   }
 
   FORCE_INLINE VariantRef getOrAddUpstreamMember() const {
-    return VariantAttorney<TObject>::getOrAddMember(_object, _key);
+    return VariantRef(getPool(), getOrCreateData());
   }
 
   friend void convertToJson(const this_type &src, VariantRef dst) {
     dst.set(src.getUpstreamMemberConst());
-  }
-
-  const VariantData *getDataConst() const {
-    return VariantAttorney<TObject>::getDataConst(getUpstreamMemberConst());
   }
 
   TObject _object;

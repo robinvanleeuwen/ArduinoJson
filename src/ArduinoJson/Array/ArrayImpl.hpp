@@ -12,12 +12,12 @@ namespace ARDUINOJSON_NAMESPACE {
 
 template <typename TArray>
 inline ArrayRef ArrayShortcuts<TArray>::createNestedArray() const {
-  return VariantAttorney<TArray>::addElement(impl()).template to<ArrayRef>();
+  return add().template as<ArrayRef>();
 }
 
 template <typename TArray>
 inline ObjectRef ArrayShortcuts<TArray>::createNestedObject() const {
-  return VariantAttorney<TArray>::addElement(impl()).template to<ObjectRef>();
+  return add().template as<ObjectRef>();
 }
 
 template <typename TArray>
@@ -28,19 +28,21 @@ inline ElementProxy<TArray> ArrayShortcuts<TArray>::operator[](
 
 template <typename TArray>
 inline VariantRef ArrayShortcuts<TArray>::add() const {
-  return VariantAttorney<TArray>::addElement(impl());
+  VariantData* data = VariantAttorney::getData(impl());
+  MemoryPool* pool = VariantAttorney::getPool(impl());
+  return VariantRef(pool, variantAddElement(data, pool));
 }
 
 template <typename TArray>
 template <typename T>
-inline bool ArrayShortcuts<TArray>::add(const T &value) const {
-  return VariantAttorney<TArray>::addElement(impl()).set(value);
+inline bool ArrayShortcuts<TArray>::add(const T& value) const {
+  return add().set(value);
 }
 
 template <typename TArray>
 template <typename T>
-inline bool ArrayShortcuts<TArray>::add(T *value) const {
-  return VariantAttorney<TArray>::addElement(impl()).set(value);
+inline bool ArrayShortcuts<TArray>::add(T* value) const {
+  return add().set(value);
 }
 
 }  // namespace ARDUINOJSON_NAMESPACE

@@ -21,7 +21,7 @@ template <typename TData>
 class ObjectRefBase {
  public:
   operator VariantConstRef() const {
-    return VariantConstRef(getDataConst());
+    return VariantConstRef(collectionToVariant(_data));
   }
 
   FORCE_INLINE bool isNull() const {
@@ -37,7 +37,7 @@ class ObjectRefBase {
   }
 
   FORCE_INLINE size_t nesting() const {
-    return variantNesting(getDataConst());
+    return variantNesting(collectionToVariant(_data));
   }
 
   FORCE_INLINE size_t size() const {
@@ -45,11 +45,6 @@ class ObjectRefBase {
   }
 
  protected:
-  const VariantData* getDataConst() const {
-    const void* data = _data;  // prevent warning cast-align
-    return reinterpret_cast<const VariantData*>(data);
-  }
-
   ObjectRefBase(TData* data) : _data(data) {}
   TData* _data;
 };
@@ -59,6 +54,8 @@ class ObjectConstRef : public ObjectRefBase<const CollectionData>,
                        public Visitable {
   friend class ObjectRef;
   typedef ObjectRefBase<const CollectionData> base_type;
+
+  friend class VariantAttorney;
 
  public:
   typedef ObjectConstIterator iterator;
@@ -126,6 +123,11 @@ class ObjectConstRef : public ObjectRefBase<const CollectionData>,
     return count == rhs.size();
   }
 
+ protected:
+  const VariantData* getDataConst() const {
+    return collectionToVariant(_data);
+  }
+
  private:
   // getMemberConst(const std::string&) const
   // getMemberConst(const String&) const
@@ -149,7 +151,7 @@ class ObjectRef : public ObjectRefBase<CollectionData>,
                   public Visitable {
   typedef ObjectRefBase<CollectionData> base_type;
 
-  friend class VariantAttorney<ObjectRef>;
+  friend class VariantAttorney;
 
  public:
   typedef ObjectIterator iterator;
@@ -214,6 +216,23 @@ class ObjectRef : public ObjectRefBase<CollectionData>,
     objectRemove(_data, adaptString(key));
   }
 
+ protected:
+  const VariantData* getDataConst() const {
+    return collectionToVariant(_data);
+  }
+
+  VariantData* getData() const {
+    return collectionToVariant(_data);
+  }
+
+  VariantData* getOrCreateData() const {
+    return collectionToVariant(_data);
+  }
+
+  MemoryPool* getPool() const {
+    return _pool;
+  }
+
  private:
   // getMember(const std::string&) const
   // getMember(const String&) const
@@ -268,35 +287,29 @@ class ObjectRef : public ObjectRefBase<CollectionData>,
 };
 
 template <>
-struct Converter<ObjectConstRef> {
+struct Converter<ObjectConstRef> : private VariantAttorney {
   static void toJson(VariantConstRef src, VariantRef dst) {
-    variantCopyFrom(VariantAttorney<VariantRef>::getData(dst),
-                    VariantAttorney<VariantConstRef>::getDataConst(src),
-                    getPool(dst));
+    variantCopyFrom(getOrCreateData(dst), getDataConst(src), getPool(dst));
   }
 
   static ObjectConstRef fromJson(VariantConstRef src) {
-    return ObjectConstRef(
-        variantAsObject(VariantAttorney<VariantConstRef>::getDataConst(src)));
+    return ObjectConstRef(variantAsObject(getDataConst(src)));
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data =
-        VariantAttorney<VariantConstRef>::getDataConst(src);
+    const VariantData* data = getDataConst(src);
     return data && data->resolve()->isObject();
   }
 };
 
 template <>
-struct Converter<ObjectRef> {
+struct Converter<ObjectRef> : private VariantAttorney {
   static void toJson(VariantConstRef src, VariantRef dst) {
-    variantCopyFrom(VariantAttorney<VariantRef>::getData(dst),
-                    VariantAttorney<VariantConstRef>::getDataConst(src),
-                    getPool(dst));
+    variantCopyFrom(getOrCreateData(dst), getDataConst(src), getPool(dst));
   }
 
   static ObjectRef fromJson(VariantRef src) {
-    VariantData* data = VariantAttorney<VariantRef>::getData(src);
+    VariantData* data = getData(src);
     MemoryPool* pool = getPool(src);
     return ObjectRef(pool, data != 0 ? data->asObject() : 0);
   }
@@ -309,8 +322,7 @@ struct Converter<ObjectRef> {
   }
 
   static bool checkJson(VariantRef src) {
-    const VariantData* data =
-        VariantAttorney<VariantConstRef>::getDataConst(src);
+    const VariantData* data = getDataConst(src);
     return data && data->isObject();
   }
 };

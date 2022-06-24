@@ -19,7 +19,6 @@
 #include <ArduinoJson/Variant/VariantShortcuts.hpp>
 #include <ArduinoJson/Variant/VariantTag.hpp>
 
-
 namespace ARDUINOJSON_NAMESPACE {
 
 // Forward declarations.
@@ -53,16 +52,11 @@ class VariantRefBase : public VariantTag {
  protected:
   VariantRefBase(TData *data) : _data(data) {}
   TData *_data;
-
-  const TData *getDataConst() {
-    return &_data;
-  }
 };
 
 template <typename TObject, typename TStringRef>
 class MemberProxy;
 
-template <typename TClient>
 class VariantAttorney;
 
 class VariantConstRef : public VariantRefBase<const VariantData>,
@@ -71,7 +65,7 @@ class VariantConstRef : public VariantRefBase<const VariantData>,
                         public Visitable {
   typedef VariantRefBase<const VariantData> base_type;
 
-  friend class VariantAttorney<VariantConstRef>;
+  friend class VariantAttorney;
 
  public:
   VariantConstRef() : base_type(0) {}
@@ -151,6 +145,11 @@ class VariantConstRef : public VariantRefBase<const VariantData>,
     return getMemberConst(key);
   }
 
+ protected:
+  const VariantData *getDataConst() const {
+    return _data;
+  }
+
  private:
   FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
     return VariantConstRef(_data != 0 ? _data->resolve()->getElement(index)
@@ -188,7 +187,7 @@ class VariantRef : public VariantRefBase<VariantData>,
                    public Visitable {
   typedef VariantRefBase<VariantData> base_type;
 
-  friend class VariantAttorney<VariantRef>;
+  friend class VariantAttorney;
 
  public:
   // Intenal use only
@@ -313,12 +312,28 @@ class VariantRef : public VariantRefBase<VariantData>,
   inline void link(VariantConstRef target) {
     if (!_data)
       return;
-    const VariantData *targetData =
-        VariantAttorney<VariantConstRef>::getDataConst(target);
+    const VariantData *targetData = VariantAttorney::getDataConst(target);
     if (targetData)
       _data->setPointer(targetData);
     else
       _data->setNull();
+  }
+
+ protected:
+  const VariantData *getDataConst() const {
+    return _data;
+  }
+
+  VariantData *getData() const {
+    return _data;
+  }
+
+  VariantData *getOrCreateData() const {
+    return _data;
+  }
+
+  MemoryPool *getPool() const {
+    return _pool;
   }
 
  private:
@@ -397,11 +412,9 @@ class VariantRef : public VariantRefBase<VariantData>,
 };
 
 template <>
-struct Converter<VariantRef> {
+struct Converter<VariantRef> : private VariantAttorney {
   static void toJson(VariantRef src, VariantRef dst) {
-    variantCopyFrom(VariantAttorney<VariantRef>::getDataConst(dst),
-                    VariantAttorney<VariantConstRef>::getData(src),
-                    getPool(dst));
+    variantCopyFrom(getOrCreateData(dst), getDataConst(src), getPool(dst));
   }
 
   static VariantRef fromJson(VariantRef src) {
@@ -412,7 +425,7 @@ struct Converter<VariantRef> {
       VariantConstRef);
 
   static bool checkJson(VariantRef src) {
-    VariantData *data = VariantAttorney<VariantRef>::getData(src);
+    VariantData *data = getData(src);
     return !!data;
   }
 
@@ -422,20 +435,17 @@ struct Converter<VariantRef> {
 };
 
 template <>
-struct Converter<VariantConstRef> {
+struct Converter<VariantConstRef> : private VariantAttorney {
   static void toJson(VariantConstRef src, VariantRef dst) {
-    variantCopyFrom(VariantAttorney<VariantRef>::getData(dst),
-                    VariantAttorney<VariantConstRef>::getDataConst(src),
-                    getPool(dst));
+    variantCopyFrom(getOrCreateData(dst), getDataConst(src), getPool(dst));
   }
 
   static VariantConstRef fromJson(VariantConstRef src) {
-    return VariantConstRef(getData(src));
+    return VariantConstRef(getDataConst(src));
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData *data =
-        VariantAttorney<VariantConstRef>::getDataConst(src);
+    const VariantData *data = getDataConst(src);
     return !!data;
   }
 };

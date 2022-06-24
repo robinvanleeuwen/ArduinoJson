@@ -23,7 +23,7 @@ template <typename TData>
 class ArrayRefBase {
  public:
   operator VariantConstRef() const {
-    return VariantConstRef(getDataConst());
+    return VariantConstRef(collectionToVariant(_data));
   }
 
   FORCE_INLINE bool isNull() const {
@@ -39,7 +39,7 @@ class ArrayRefBase {
   }
 
   FORCE_INLINE size_t nesting() const {
-    return variantNesting(getDataConst());
+    return variantNesting(collectionToVariant(_data));
   }
 
   FORCE_INLINE size_t size() const {
@@ -47,11 +47,6 @@ class ArrayRefBase {
   }
 
  protected:
-  const VariantData* getDataConst() const {
-    const void* data = _data;  // prevent warning cast-align
-    return reinterpret_cast<const VariantData*>(data);
-  }
-
   ArrayRefBase(TData* data) : _data(data) {}
   TData* _data;
 };
@@ -61,6 +56,8 @@ class ArrayConstRef : public ArrayRefBase<const CollectionData>,
                       public Visitable {
   friend class ArrayRef;
   typedef ArrayRefBase<const CollectionData> base_type;
+
+  friend class VariantAttorney;
 
  public:
   typedef ArrayConstRefIterator iterator;
@@ -105,6 +102,11 @@ class ArrayConstRef : public ArrayRefBase<const CollectionData>,
     return getElementConst(index);
   }
 
+ protected:
+  const VariantData* getDataConst() const {
+    return collectionToVariant(_data);
+  }
+
  private:
   FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
     return VariantConstRef(_data ? _data->getElement(index) : 0);
@@ -117,7 +119,7 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
                  public Visitable {
   typedef ArrayRefBase<CollectionData> base_type;
 
-  friend class VariantAttorney<ArrayRef>;
+  friend class VariantAttorney;
 
  public:
   typedef ArrayIterator iterator;
@@ -176,6 +178,23 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
     _data->clear();
   }
 
+ protected:
+  const VariantData* getDataConst() const {
+    return collectionToVariant(_data);
+  }
+
+  VariantData* getData() const {
+    return collectionToVariant(_data);
+  }
+
+  VariantData* getOrCreateData() const {
+    return collectionToVariant(_data);
+  }
+
+  MemoryPool* getPool() const {
+    return _pool;
+  }
+
  private:
   VariantRef addElement() const {
     return VariantRef(_pool, arrayAdd(_data, _pool));
@@ -200,35 +219,29 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
 };
 
 template <>
-struct Converter<ArrayConstRef> {
+struct Converter<ArrayConstRef> : private VariantAttorney {
   static void toJson(VariantConstRef src, VariantRef dst) {
-    variantCopyFrom(VariantAttorney<VariantRef>::getData(dst),
-                    VariantAttorney<VariantConstRef>::getDataConst(src),
-                    getPool(dst));
+    variantCopyFrom(getOrCreateData(dst), getDataConst(src), getPool(dst));
   }
 
   static ArrayConstRef fromJson(VariantConstRef src) {
-    return ArrayConstRef(
-        variantAsArray(VariantAttorney<VariantConstRef>::getDataConst(src)));
+    return ArrayConstRef(variantAsArray(getDataConst(src)));
   }
 
   static bool checkJson(VariantConstRef src) {
-    const VariantData* data =
-        VariantAttorney<VariantConstRef>::getDataConst(src);
+    const VariantData* data = getDataConst(src);
     return data && data->resolve()->isArray();
   }
 };
 
 template <>
-struct Converter<ArrayRef> {
+struct Converter<ArrayRef> : private VariantAttorney {
   static void toJson(VariantConstRef src, VariantRef dst) {
-    variantCopyFrom(VariantAttorney<VariantRef>::getData(dst),
-                    VariantAttorney<VariantConstRef>::getData(src),
-                    getPool(dst));
+    variantCopyFrom(getOrCreateData(dst), getDataConst(src), getPool(dst));
   }
 
   static ArrayRef fromJson(VariantRef src) {
-    VariantData* data = VariantAttorney<VariantRef>::getData(src);
+    VariantData* data = getData(src);
     MemoryPool* pool = getPool(src);
     return ArrayRef(pool, data != 0 ? data->asArray() : 0);
   }
@@ -240,7 +253,7 @@ struct Converter<ArrayRef> {
   }
 
   static bool checkJson(VariantRef src) {
-    const VariantData* data = VariantAttorney<VariantRef>::getDataConst(src);
+    const VariantData* data = getDataConst(src);
     return data && data->isArray();
   }
 };

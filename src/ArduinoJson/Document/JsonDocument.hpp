@@ -16,7 +16,7 @@ namespace ARDUINOJSON_NAMESPACE {
 
 class JsonDocument : public Visitable,
                      public VariantOperators<const JsonDocument&> {
-  friend class VariantAttorney<JsonDocument&>;
+  friend class VariantAttorney;
 
  public:
   template <typename T>
@@ -267,9 +267,27 @@ class JsonDocument : public Visitable,
   MemoryPool _pool;
   VariantData _data;
 
+ protected:
+  FORCE_INLINE MemoryPool* getPool() {
+    return &_pool;
+  }
+
+  FORCE_INLINE VariantData* getData() {
+    return &_data;
+  }
+
+  FORCE_INLINE VariantData* getOrCreateData() {
+    return &_data;
+  }
+
+  FORCE_INLINE const VariantData* getDataConst() const {
+    return &_data;
+  }
+
  private:
-  JsonDocument(const JsonDocument&);
-  JsonDocument& operator=(const JsonDocument&);
+  FORCE_INLINE VariantRef addElement() {
+    return VariantRef(&_pool, _data.addElement(&_pool));
+  }
 
   FORCE_INLINE VariantRef getElement(size_t index) {
     return VariantRef(&_pool, _data.getElement(index));
@@ -335,17 +353,8 @@ class JsonDocument : public Visitable,
                                            getStringStoragePolicy(key)));
   }
 
-  FORCE_INLINE VariantRef addElement() {
-    return VariantRef(&_pool, _data.addElement(&_pool));
-  }
-
-  FORCE_INLINE VariantData* getData() {
-    return &_data;
-  }
-
-  FORCE_INLINE const VariantData* getDataConst() const {
-    return &_data;
-  }
+  JsonDocument(const JsonDocument&);
+  JsonDocument& operator=(const JsonDocument&);
 };
 
 inline void convertToJson(const JsonDocument& src, VariantRef dst) {
