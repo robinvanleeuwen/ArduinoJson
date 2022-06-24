@@ -28,7 +28,7 @@ inline ElementProxy<TArray> ArrayShortcuts<TArray>::operator[](
 
 template <typename TArray>
 inline VariantRef ArrayShortcuts<TArray>::add() const {
-  VariantData* data = VariantAttorney::getData(impl());
+  VariantData* data = VariantAttorney::getOrCreateData(impl());
   MemoryPool* pool = VariantAttorney::getPool(impl());
   return VariantRef(pool, variantAddElement(data, pool));
 }
