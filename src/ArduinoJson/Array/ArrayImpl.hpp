@@ -12,12 +12,12 @@ namespace ARDUINOJSON_NAMESPACE {
 
 template <typename TArray>
 inline ArrayRef ArrayShortcuts<TArray>::createNestedArray() const {
-  return add().template as<ArrayRef>();
+  return add().template to<ArrayRef>();
 }
 
 template <typename TArray>
 inline ObjectRef ArrayShortcuts<TArray>::createNestedObject() const {
-  return add().template as<ObjectRef>();
+  return add().template to<ObjectRef>();
 }
 
 template <typename TArray>
