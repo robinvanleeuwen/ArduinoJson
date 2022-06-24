@@ -15,22 +15,22 @@ class VariantAttorney {
  public:
   template <typename TClient>
   static FORCE_INLINE MemoryPool *getPool(TClient &client) {
-    return client.template getPool();
+    return client.getPool();
   }
 
   template <typename TClient>
   static FORCE_INLINE VariantData *getData(TClient &client) {
-    return client.template getData();
+    return client.getData();
   }
 
   template <typename TClient>
   static FORCE_INLINE VariantData *getOrCreateData(TClient &client) {
-    return client.template getOrCreateData();
+    return client.getOrCreateData();
   }
 
   template <typename TClient>
   static FORCE_INLINE const VariantData *getDataConst(const TClient &client) {
-    return client.template getDataConst();
+    return client.getDataConst();
   }
 };
 
