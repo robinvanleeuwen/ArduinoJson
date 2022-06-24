@@ -167,7 +167,7 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
 
   const VariantData *getDataConst() const {
     const VariantData *data = VariantAttorney::getDataConst(_object);
-    return data ? data->getMember(adaptString(_key)) : 0;
+    return data ? data->resolve()->getMember(adaptString(_key)) : 0;
   }
 
   VariantData *getData() const {

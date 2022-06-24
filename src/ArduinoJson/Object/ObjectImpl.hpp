@@ -41,7 +41,7 @@ template <typename TString>
 inline typename enable_if<IsString<TString>::value, bool>::type
 ObjectShortcuts<TObject>::containsKey(const TString& key) const {
   const VariantData* data = VariantAttorney::getDataConst(impl());
-  return data && data->getMember(adaptString(key));
+  return data && data->resolve()->getMember(adaptString(key));
 }
 
 template <typename TObject>
@@ -49,7 +49,7 @@ template <typename TChar>
 inline typename enable_if<IsString<TChar*>::value, bool>::type
 ObjectShortcuts<TObject>::containsKey(TChar* key) const {
   const VariantData* data = VariantAttorney::getDataConst(impl());
-  return data && data->getMember(adaptString(key));
+  return data && data->resolve()->getMember(adaptString(key));
 }
 
 template <typename TObject>

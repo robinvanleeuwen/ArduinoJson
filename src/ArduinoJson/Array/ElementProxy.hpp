@@ -191,7 +191,7 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
 
   FORCE_INLINE const VariantData* getDataConst() const {
     const VariantData* data = VariantAttorney::getDataConst(_array);
-    return data ? data->getElement(_index) : 0;
+    return data ? data->resolve()->getElement(_index) : 0;
   }
 
  private:
