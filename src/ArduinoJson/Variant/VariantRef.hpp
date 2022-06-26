@@ -317,23 +317,6 @@ class VariantRef : public VariantRefBase<VariantData>,
   }
 
  private:
-  // getMember(const char*) const
-  // getMember(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE VariantRef getMember(TChar *key) const {
-    return VariantRef(_pool,
-                      _data != 0 ? _data->getMember(adaptString(key)) : 0);
-  }
-
-  // getMember(const std::string&) const
-  // getMember(const String&) const
-  template <typename TString>
-  FORCE_INLINE typename enable_if<IsString<TString>::value, VariantRef>::type
-  getMember(const TString &key) const {
-    return VariantRef(_pool,
-                      _data != 0 ? _data->getMember(adaptString(key)) : 0);
-  }
-
   // getOrAddMember(char*) const
   // getOrAddMember(const char*) const
   // getOrAddMember(const __FlashStringHelper*) const
