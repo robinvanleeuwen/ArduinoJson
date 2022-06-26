@@ -317,10 +317,6 @@ class VariantRef : public VariantRefBase<VariantData>,
   }
 
  private:
-  VariantRef addElement() const {
-    return VariantRef(_pool, variantAddElement(_data, _pool));
-  }
-
   FORCE_INLINE VariantRef getOrAddElement(size_t index) const {
     return VariantRef(_pool, variantGetOrAddElement(_data, index, _pool));
   }
