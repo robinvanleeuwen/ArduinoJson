@@ -200,11 +200,6 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
     return VariantRef(_pool, _data ? _data->getOrAddElement(index, _pool) : 0);
   }
 
-  // Gets the value at the specified index.
-  FORCE_INLINE VariantRef getElement(size_t index) const {
-    return VariantRef(_pool, _data ? _data->getElement(index) : 0);
-  }
-
   MemoryPool* _pool;
 };
 
