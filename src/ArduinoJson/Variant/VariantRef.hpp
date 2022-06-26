@@ -321,10 +321,6 @@ class VariantRef : public VariantRefBase<VariantData>,
     return VariantRef(_pool, variantAddElement(_data, _pool));
   }
 
-  FORCE_INLINE VariantRef getElement(size_t index) const {
-    return VariantRef(_pool, _data != 0 ? _data->getElement(index) : 0);
-  }
-
   FORCE_INLINE VariantRef getOrAddElement(size_t index) const {
     return VariantRef(_pool, variantGetOrAddElement(_data, index, _pool));
   }
