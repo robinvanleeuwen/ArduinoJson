@@ -317,10 +317,6 @@ class VariantRef : public VariantRefBase<VariantData>,
   }
 
  private:
-  FORCE_INLINE VariantRef getOrAddElement(size_t index) const {
-    return VariantRef(_pool, variantGetOrAddElement(_data, index, _pool));
-  }
-
   // getMember(const char*) const
   // getMember(const __FlashStringHelper*) const
   template <typename TChar>
