@@ -123,7 +123,8 @@ class VariantConstRef : public VariantRefBase<const VariantData>,
   }
 
   FORCE_INLINE VariantConstRef operator[](size_t index) const {
-    return getElementConst(index);
+    return VariantConstRef(_data != 0 ? _data->resolve()->getElement(index)
+                                      : 0);
   }
 
   // operator[](const std::string&) const
@@ -151,11 +152,6 @@ class VariantConstRef : public VariantRefBase<const VariantData>,
   }
 
  private:
-  FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
-    return VariantConstRef(_data != 0 ? _data->resolve()->getElement(index)
-                                      : 0);
-  }
-
   // getMemberConst(const std::string&) const
   // getMemberConst(const String&) const
   template <typename TString>
@@ -343,11 +339,6 @@ class VariantRef : public VariantRefBase<VariantData>,
 
   FORCE_INLINE VariantRef getElement(size_t index) const {
     return VariantRef(_pool, _data != 0 ? _data->getElement(index) : 0);
-  }
-
-  FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
-    return VariantConstRef(_data != 0 ? _data->resolve()->getElement(index)
-                                      : 0);
   }
 
   FORCE_INLINE VariantRef getOrAddElement(size_t index) const {
