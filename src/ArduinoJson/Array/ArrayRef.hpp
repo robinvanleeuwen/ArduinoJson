@@ -99,17 +99,12 @@ class ArrayConstRef : public ArrayRefBase<const CollectionData>,
   }
 
   FORCE_INLINE VariantConstRef operator[](size_t index) const {
-    return getElementConst(index);
+    return VariantConstRef(_data ? _data->getElement(index) : 0);
   }
 
  protected:
   const VariantData* getDataConst() const {
     return collectionToVariant(_data);
-  }
-
- private:
-  FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
-    return VariantConstRef(_data ? _data->getElement(index) : 0);
   }
 };
 
@@ -208,11 +203,6 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
   // Gets the value at the specified index.
   FORCE_INLINE VariantRef getElement(size_t index) const {
     return VariantRef(_pool, _data ? _data->getElement(index) : 0);
-  }
-
-  // Gets the value at the specified index.
-  FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
-    return VariantConstRef(_data ? _data->getElement(index) : 0);
   }
 
   MemoryPool* _pool;
