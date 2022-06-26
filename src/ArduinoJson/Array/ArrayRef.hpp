@@ -195,11 +195,6 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
     return VariantRef(_pool, arrayAdd(_data, _pool));
   }
 
-  // Internal use
-  FORCE_INLINE VariantRef getOrAddElement(size_t index) const {
-    return VariantRef(_pool, _data ? _data->getOrAddElement(index, _pool) : 0);
-  }
-
   MemoryPool* _pool;
 };
 
