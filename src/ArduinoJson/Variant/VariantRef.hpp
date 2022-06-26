@@ -318,10 +318,6 @@ class VariantRef : public VariantRefBase<VariantData>,
 
  private:
   MemoryPool *_pool;
-
-  friend MemoryPool *getPool(const VariantRef &variant) {
-    return variant._pool;
-  }
 };
 
 template <>

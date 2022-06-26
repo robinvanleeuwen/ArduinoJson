@@ -155,7 +155,7 @@ template <typename T>
 inline typename enable_if<IsString<T>::value, bool>::type convertToJson(
     const T& src, VariantRef dst) {
   VariantData* data = VariantAttorney::getOrCreateData(dst);
-  MemoryPool* pool = getPool(dst);
+  MemoryPool* pool = VariantAttorney::getPool(dst);
   return variantSetString(data, adaptString(src), pool,
                           getStringStoragePolicy(src));
 }
@@ -245,7 +245,7 @@ class MemoryPoolPrint : public Print {
 };
 
 inline void convertToJson(const ::Printable& src, VariantRef dst) {
-  MemoryPool* pool = getPool(dst);
+  MemoryPool* pool = VariantAttorney::getPool(dst);
   VariantData* data = VariantAttorney::getOrCreateData(dst);
   if (!pool || !data)
     return;
