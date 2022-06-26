@@ -191,10 +191,6 @@ class ArrayRef : public ArrayRefBase<CollectionData>,
   }
 
  private:
-  VariantRef addElement() const {
-    return VariantRef(_pool, arrayAdd(_data, _pool));
-  }
-
   MemoryPool* _pool;
 };
 
