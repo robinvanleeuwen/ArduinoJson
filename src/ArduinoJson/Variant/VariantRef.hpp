@@ -317,21 +317,6 @@ class VariantRef : public VariantRefBase<VariantData>,
   }
 
  private:
-  // getOrAddMember(char*) const
-  // getOrAddMember(const char*) const
-  // getOrAddMember(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE VariantRef getOrAddMember(TChar *key) const {
-    return VariantRef(_pool, variantGetOrAddMember(_data, key, _pool));
-  }
-
-  // getOrAddMember(const std::string&) const
-  // getOrAddMember(const String&) const
-  template <typename TString>
-  FORCE_INLINE VariantRef getOrAddMember(const TString &key) const {
-    return VariantRef(_pool, variantGetOrAddMember(_data, key, _pool));
-  }
-
   MemoryPool *_pool;
 
   friend MemoryPool *getPool(const VariantRef &variant) {
