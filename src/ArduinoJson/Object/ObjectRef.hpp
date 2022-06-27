@@ -218,40 +218,6 @@ class ObjectRef : public ObjectRefBase<CollectionData>,
   }
 
  private:
-  // getMember(const std::string&) const
-  // getMember(const String&) const
-  template <typename TString>
-  FORCE_INLINE VariantRef getMember(const TString& key) const {
-    return VariantRef(_pool, objectGetMember(_data, adaptString(key)));
-  }
-
-  // getMember(char*) const
-  // getMember(const char*) const
-  // getMember(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE VariantRef getMember(TChar* key) const {
-    return VariantRef(_pool, objectGetMember(_data, adaptString(key)));
-  }
-
-  // getOrAddMember(const std::string&) const
-  // getOrAddMember(const String&) const
-  template <typename TString>
-  FORCE_INLINE VariantRef getOrAddMember(const TString& key) const {
-    return VariantRef(_pool,
-                      objectGetOrAddMember(_data, adaptString(key), _pool,
-                                           getStringStoragePolicy(key)));
-  }
-
-  // getOrAddMember(char*) const
-  // getOrAddMember(const char*) const
-  // getOrAddMember(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE VariantRef getOrAddMember(TChar* key) const {
-    return VariantRef(_pool,
-                      objectGetOrAddMember(_data, adaptString(key), _pool,
-                                           getStringStoragePolicy(key)));
-  }
-
   MemoryPool* _pool;
 };
 
