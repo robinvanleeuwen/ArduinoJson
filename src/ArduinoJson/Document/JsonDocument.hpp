@@ -137,14 +137,14 @@ class JsonDocument : public Visitable,
   // containsKey(const __FlashStringHelper*) const
   template <typename TChar>
   bool containsKey(TChar* key) const {
-    return !getMemberConst(key).isUnbound();
+    return _data.getMember(adaptString(key));
   }
 
   // containsKey(const std::string&) const
   // containsKey(const String&) const
   template <typename TString>
   bool containsKey(const TString& key) const {
-    return !getMemberConst(key).isUnbound();
+    return _data.getMember(adaptString(key));
   }
 
   // operator[](const std::string&)
@@ -172,7 +172,7 @@ class JsonDocument : public Visitable,
   FORCE_INLINE
       typename enable_if<IsString<TString>::value, VariantConstRef>::type
       operator[](const TString& key) const {
-    return getMemberConst(key);
+    return VariantConstRef(_data.getMember(adaptString(key)));
   }
 
   // operator[](char*) const
@@ -182,7 +182,7 @@ class JsonDocument : public Visitable,
   FORCE_INLINE
       typename enable_if<IsString<TChar*>::value, VariantConstRef>::type
       operator[](TChar* key) const {
-    return getMemberConst(key);
+    return VariantConstRef(_data.getMember(adaptString(key)));
   }
 
   FORCE_INLINE ElementProxy<JsonDocument&> operator[](size_t index) {
@@ -285,27 +285,6 @@ class JsonDocument : public Visitable,
   }
 
  private:
-  FORCE_INLINE VariantRef getOrAddElement(size_t index) {
-    return VariantRef(&_pool, _data.getOrAddElement(index, &_pool));
-  }
-
-  // JsonVariantConst getMemberConst(char*) const
-  // JsonVariantConst getMemberConst(const char*) const
-  // JsonVariantConst getMemberConst(const __FlashStringHelper*) const
-  template <typename TChar>
-  FORCE_INLINE VariantConstRef getMemberConst(TChar* key) const {
-    return VariantConstRef(_data.getMember(adaptString(key)));
-  }
-
-  // JsonVariantConst getMemberConst(const std::string&) const
-  // JsonVariantConst getMemberConst(const String&) const
-  template <typename TString>
-  FORCE_INLINE
-      typename enable_if<IsString<TString>::value, VariantConstRef>::type
-      getMemberConst(const TString& key) const {
-    return VariantConstRef(_data.getMember(adaptString(key)));
-  }
-
   // JsonVariant getMember(char*)
   // JsonVariant getMember(const char*)
   // JsonVariant getMember(const __FlashStringHelper*)
