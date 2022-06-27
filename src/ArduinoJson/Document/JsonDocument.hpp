@@ -95,7 +95,7 @@ class JsonDocument : public Visitable,
   }
 
   ArrayRef createNestedArray() {
-    return addElement().to<ArrayRef>();
+    return add().to<ArrayRef>();
   }
 
   // createNestedArray(char*)
@@ -114,7 +114,7 @@ class JsonDocument : public Visitable,
   }
 
   ObjectRef createNestedObject() {
-    return addElement().to<ObjectRef>();
+    return add().to<ObjectRef>();
   }
 
   // createNestedObject(char*)
@@ -194,12 +194,12 @@ class JsonDocument : public Visitable,
   }
 
   FORCE_INLINE VariantRef add() {
-    return addElement();
+    return VariantRef(&_pool, _data.addElement(&_pool));
   }
 
   template <typename TValue>
   FORCE_INLINE bool add(const TValue& value) {
-    return addElement().set(value);
+    return add().set(value);
   }
 
   // add(char*) const
@@ -207,7 +207,7 @@ class JsonDocument : public Visitable,
   // add(const __FlashStringHelper*) const
   template <typename TChar>
   FORCE_INLINE bool add(TChar* value) {
-    return addElement().set(value);
+    return add().set(value);
   }
 
   FORCE_INLINE void remove(size_t index) {
@@ -285,10 +285,6 @@ class JsonDocument : public Visitable,
   }
 
  private:
-  FORCE_INLINE VariantRef addElement() {
-    return VariantRef(&_pool, _data.addElement(&_pool));
-  }
-
   FORCE_INLINE VariantRef getElement(size_t index) {
     return VariantRef(&_pool, _data.getElement(index));
   }
