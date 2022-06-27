@@ -162,15 +162,15 @@ class ElementProxy : public VariantOperators<ElementProxy<TArray> >,
   }
 
  private:
-  VariantRef getOrAddUpstreamElement() const {
+  FORCE_INLINE VariantRef getOrAddUpstreamElement() const {
     return VariantRef(getPool(), getOrCreateData());
   }
 
-  VariantRef getUpstreamElement() const {
+  FORCE_INLINE VariantRef getUpstreamElement() const {
     return VariantRef(getPool(), getData());
   }
 
-  VariantConstRef getUpstreamElementConst() const {
+  FORCE_INLINE VariantConstRef getUpstreamElementConst() const {
     return VariantConstRef(getDataConst());
   }
 
