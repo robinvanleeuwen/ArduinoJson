@@ -190,7 +190,7 @@ class JsonDocument : public Visitable,
   }
 
   FORCE_INLINE VariantConstRef operator[](size_t index) const {
-    return getElementConst(index);
+    return VariantConstRef(_data.getElement(index));
   }
 
   FORCE_INLINE VariantRef add() {
@@ -285,14 +285,6 @@ class JsonDocument : public Visitable,
   }
 
  private:
-  FORCE_INLINE VariantRef getElement(size_t index) {
-    return VariantRef(&_pool, _data.getElement(index));
-  }
-
-  FORCE_INLINE VariantConstRef getElementConst(size_t index) const {
-    return VariantConstRef(_data.getElement(index));
-  }
-
   FORCE_INLINE VariantRef getOrAddElement(size_t index) {
     return VariantRef(&_pool, _data.getOrAddElement(index, &_pool));
   }
