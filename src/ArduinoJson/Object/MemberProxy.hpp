@@ -161,21 +161,21 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
   }
 
  protected:
-  MemoryPool *getPool() const {
+  FORCE_INLINE MemoryPool *getPool() const {
     return VariantAttorney::getPool(_object);
   }
 
-  const VariantData *getDataConst() const {
+  FORCE_INLINE const VariantData *getDataConst() const {
     const VariantData *data = VariantAttorney::getDataConst(_object);
     return data ? data->resolve()->getMember(adaptString(_key)) : 0;
   }
 
-  VariantData *getData() const {
+  FORCE_INLINE VariantData *getData() const {
     VariantData *data = VariantAttorney::getData(_object);
     return data ? data->getMember(adaptString(_key)) : 0;
   }
 
-  VariantData *getOrCreateData() const {
+  FORCE_INLINE VariantData *getOrCreateData() const {
     VariantData *data = VariantAttorney::getOrCreateData(_object);
     return variantGetOrAddMember(data, _key, getPool());
   }
@@ -189,7 +189,7 @@ class MemberProxy : public VariantOperators<MemberProxy<TObject, TStringRef> >,
     return VariantConstRef(getDataConst());
   }
 
-  FORCE_INLINE VariantRef getOrAddUpstreamMember() const {
+  VariantRef getOrAddUpstreamMember() const {
     return VariantRef(getPool(), getOrCreateData());
   }
 
