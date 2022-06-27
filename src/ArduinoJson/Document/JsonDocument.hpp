@@ -103,14 +103,14 @@ class JsonDocument : public Visitable,
   // createNestedArray(const __FlashStringHelper*)
   template <typename TChar>
   ArrayRef createNestedArray(TChar* key) {
-    return getOrAddMember(key).template to<ArrayRef>();
+    return operator[](key).template to<ArrayRef>();
   }
 
   // createNestedArray(const std::string&)
   // createNestedArray(const String&)
   template <typename TString>
   ArrayRef createNestedArray(const TString& key) {
-    return getOrAddMember(key).template to<ArrayRef>();
+    return operator[](key).template to<ArrayRef>();
   }
 
   ObjectRef createNestedObject() {
@@ -122,14 +122,14 @@ class JsonDocument : public Visitable,
   // createNestedObject(const __FlashStringHelper*)
   template <typename TChar>
   ObjectRef createNestedObject(TChar* key) {
-    return getOrAddMember(key).template to<ObjectRef>();
+    return operator[](key).template to<ObjectRef>();
   }
 
   // createNestedObject(const std::string&)
   // createNestedObject(const String&)
   template <typename TString>
   ObjectRef createNestedObject(const TString& key) {
-    return getOrAddMember(key).template to<ObjectRef>();
+    return operator[](key).template to<ObjectRef>();
   }
 
   // containsKey(char*) const
@@ -264,10 +264,6 @@ class JsonDocument : public Visitable,
     return VariantConstRef(&_data);
   }
 
-  MemoryPool _pool;
-  VariantData _data;
-
- protected:
   FORCE_INLINE MemoryPool* getPool() {
     return &_pool;
   }
@@ -284,42 +280,10 @@ class JsonDocument : public Visitable,
     return &_data;
   }
 
+  MemoryPool _pool;
+  VariantData _data;
+
  private:
-  // JsonVariant getMember(char*)
-  // JsonVariant getMember(const char*)
-  // JsonVariant getMember(const __FlashStringHelper*)
-  template <typename TChar>
-  FORCE_INLINE VariantRef getMember(TChar* key) {
-    return VariantRef(&_pool, _data.getMember(adaptString(key)));
-  }
-
-  // JsonVariant getMember(const std::string&)
-  // JsonVariant getMember(const String&)
-  template <typename TString>
-  FORCE_INLINE typename enable_if<IsString<TString>::value, VariantRef>::type
-  getMember(const TString& key) {
-    return VariantRef(&_pool, _data.getMember(adaptString(key)));
-  }
-
-  // getOrAddMember(char*)
-  // getOrAddMember(const char*)
-  // getOrAddMember(const __FlashStringHelper*)
-  template <typename TChar>
-  FORCE_INLINE VariantRef getOrAddMember(TChar* key) {
-    return VariantRef(&_pool,
-                      _data.getOrAddMember(adaptString(key), &_pool,
-                                           getStringStoragePolicy(key)));
-  }
-
-  // getOrAddMember(const std::string&)
-  // getOrAddMember(const String&)
-  template <typename TString>
-  FORCE_INLINE VariantRef getOrAddMember(const TString& key) {
-    return VariantRef(&_pool,
-                      _data.getOrAddMember(adaptString(key), &_pool,
-                                           getStringStoragePolicy(key)));
-  }
-
   JsonDocument(const JsonDocument&);
   JsonDocument& operator=(const JsonDocument&);
 };
