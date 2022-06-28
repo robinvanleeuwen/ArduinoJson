@@ -77,7 +77,7 @@ class ObjectConstRef : public ObjectRefBase<const CollectionData>,
   // containsKey(const String&) const
   template <typename TString>
   FORCE_INLINE bool containsKey(const TString& key) const {
-    return objectGetMember(_data, adaptString(key));
+    return objectGetMember(_data, adaptString(key)) != 0;
   }
 
   // containsKey(char*) const
@@ -85,7 +85,7 @@ class ObjectConstRef : public ObjectRefBase<const CollectionData>,
   // containsKey(const __FlashStringHelper*) const
   template <typename TChar>
   FORCE_INLINE bool containsKey(TChar* key) const {
-    return objectGetMember(_data, adaptString(key));
+    return objectGetMember(_data, adaptString(key)) != 0;
   }
 
   // operator[](const std::string&) const
