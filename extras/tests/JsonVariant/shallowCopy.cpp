@@ -5,14 +5,14 @@
 #include <ArduinoJson.h>
 #include <catch.hpp>
 
-TEST_CASE("JsonVariant::link()") {
+TEST_CASE("JsonVariant::shallowCopy()") {
   StaticJsonDocument<1024> doc1, doc2;
   JsonVariant variant = doc1.to<JsonVariant>();
 
-  SECTION("JsonVariant::link(JsonDocument&)") {
+  SECTION("JsonVariant::shallowCopy(JsonDocument&)") {
     doc2["hello"] = "world";
 
-    variant.link(doc2);
+    variant.shallowCopy(doc2);
 
     CHECK(variant.as<std::string>() == "{\"hello\":\"world\"}");
 
@@ -22,10 +22,10 @@ TEST_CASE("JsonVariant::link()") {
     CHECK(variant.as<std::string>() == "{\"hello\":\"WORLD!\"}");
   }
 
-  SECTION("JsonVariant::link(MemberProxy)") {
+  SECTION("JsonVariant::shallowCopy(MemberProxy)") {
     doc2["obj"]["hello"] = "world";
 
-    variant.link(doc2["obj"]);
+    variant.shallowCopy(doc2["obj"]);
 
     CHECK(variant.as<std::string>() == "{\"hello\":\"world\"}");
 
@@ -35,10 +35,10 @@ TEST_CASE("JsonVariant::link()") {
     CHECK(variant.as<std::string>() == "{\"hello\":\"WORLD!\"}");
   }
 
-  SECTION("JsonVariant::link(ElementProxy)") {
+  SECTION("JsonVariant::shallowCopy(ElementProxy)") {
     doc2[0]["hello"] = "world";
 
-    variant.link(doc2[0]);
+    variant.shallowCopy(doc2[0]);
 
     CHECK(variant.as<std::string>() == "{\"hello\":\"world\"}");
 
@@ -52,7 +52,7 @@ TEST_CASE("JsonVariant::link()") {
     JsonVariant unbound;
     variant["hello"] = "world";
 
-    variant.link(unbound);
+    variant.shallowCopy(unbound);
 
     CHECK(variant.isUnbound() == false);
     CHECK(variant.isNull() == true);
@@ -64,7 +64,7 @@ TEST_CASE("JsonVariant::link()") {
     JsonVariant unbound;
     doc2["hello"] = "world";
 
-    unbound.link(doc2);
+    unbound.shallowCopy(doc2);
 
     CHECK(unbound.isUnbound() == true);
     CHECK(unbound.isNull() == true);

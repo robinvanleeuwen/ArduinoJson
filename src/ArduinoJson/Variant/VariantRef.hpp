@@ -355,7 +355,7 @@ class VariantRef : public VariantRefBase<VariantData>,
       _data->remove(adaptString(key));
   }
 
-  inline void link(VariantConstRef target) {
+  inline void shallowCopy(VariantConstRef target) {
     if (!_data)
       return;
     const VariantData *targetData = getData(target);
