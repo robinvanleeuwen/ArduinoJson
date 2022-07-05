@@ -37,6 +37,11 @@ class VariantData {
     _flags = VALUE_IS_NULL;
   }
 
+  void operator=(const VariantData &src) {
+    _content = src._content;
+    _flags = src._flags;  // TODO: exclude owned key bit
+  }
+
   template <typename TVisitor>
   typename TVisitor::result_type accept(TVisitor &visitor) const {
     switch (type()) {
