@@ -83,12 +83,6 @@ class VariantData {
 
   bool asBoolean() const;
 
-  const VariantData *resolve() const {
-    if (isPointer())
-      return _content.asPointer->resolve();
-    return this;
-  }
-
   CollectionData *asArray() {
     return isArray() ? &_content.asCollection : 0;
   }
@@ -121,10 +115,6 @@ class VariantData {
 
   bool isCollection() const {
     return (_flags & COLLECTION_MASK) != 0;
-  }
-
-  bool isPointer() const {
-    return type() == VALUE_IS_POINTER;
   }
 
   template <typename T>
@@ -220,12 +210,6 @@ class VariantData {
 
   void setNull() {
     setType(VALUE_IS_NULL);
-  }
-
-  void setPointer(const VariantData *p) {
-    ARDUINOJSON_ASSERT(p);
-    setType(VALUE_IS_POINTER);
-    _content.asPointer = p;
   }
 
   void setString(String s) {
