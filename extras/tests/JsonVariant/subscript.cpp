@@ -138,34 +138,12 @@ TEST_CASE("JsonVariant::operator[]") {
     CHECK(var["hello"].as<std::string>() == "world");
   }
 
-  SECTION("set value to linked object") {
-    StaticJsonDocument<1024> doc2;
-    doc2["hello"] = "world";
-    var.link(doc2);
-
-    var["tutu"] = "toto";  // no-op
-
-    CHECK(doc.as<std::string>() == "{\"hello\":\"world\"}");
-    CHECK(doc2.as<std::string>() == "{\"hello\":\"world\"}");
-  }
-
   SECTION("get value from linked array") {
     StaticJsonDocument<1024> doc2;
     doc2.add(42);
     var.link(doc2);
 
     CHECK(var[0].as<int>() == 42);
-  }
-
-  SECTION("set value to linked array") {
-    StaticJsonDocument<1024> doc2;
-    doc2.add(42);
-    var.link(doc2);
-
-    var[0] = 666;  // no-op
-
-    CHECK(doc.as<std::string>() == "[42]");
-    CHECK(doc2.as<std::string>() == "[42]");
   }
 }
 

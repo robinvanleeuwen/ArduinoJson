@@ -149,7 +149,7 @@ TEST_CASE("JsonVariant::is<T>()") {
     doc2[0] = "world";
     variant.link(doc2);
 
-    CHECK(variant.is<JsonArray>() == false);
+    CHECK(variant.is<JsonArray>() == true);
     CHECK(variant.is<JsonArrayConst>() == true);
     CHECK(variant.is<JsonVariant>() == true);
     CHECK(variant.is<JsonVariantConst>() == true);
@@ -185,7 +185,7 @@ TEST_CASE("JsonVariant::is<T>()") {
     doc2["hello"] = "world";
     variant.link(doc2);
 
-    CHECK(variant.is<JsonObject>() == false);
+    CHECK(variant.is<JsonObject>() == true);
     CHECK(variant.is<JsonObjectConst>() == true);
     CHECK(variant.is<JsonVariant>() == true);
     CHECK(variant.is<JsonVariantConst>() == true);

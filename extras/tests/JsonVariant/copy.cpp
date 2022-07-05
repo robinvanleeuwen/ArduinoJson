@@ -88,7 +88,7 @@ TEST_CASE("JsonVariant::set(JsonVariant)") {
     StaticJsonDocument<128> doc3;
     doc3["hello"] = "world";
     var1.link(doc3);
-    var2.set(var1);
+    var2.link(var1);
 
     REQUIRE(doc1.memoryUsage() == 0);
     REQUIRE(doc2.memoryUsage() == 0);

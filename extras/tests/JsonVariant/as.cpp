@@ -284,7 +284,9 @@ TEST_CASE("JsonVariant::as()") {
 
     SECTION("as<JsonObject>()") {
       JsonObject o = variant.as<JsonObject>();
-      CHECK(o.isNull() == true);
+      CHECK(o.isNull() == false);
+      CHECK(o.size() == 1);
+      CHECK(o["hello"] == "world");
     }
 
     SECTION("as<JsonObjectConst>()") {
@@ -307,7 +309,10 @@ TEST_CASE("JsonVariant::as()") {
 
     SECTION("as<JsonArray>()") {
       JsonArray a = variant.as<JsonArray>();
-      CHECK(a.isNull() == true);
+      CHECK(a.isNull() == false);
+      CHECK(a.size() == 2);
+      CHECK(a[0] == "hello");
+      CHECK(a[1] == "world");
     }
 
     SECTION("as<JsonArrayConst>()") {
@@ -320,6 +325,11 @@ TEST_CASE("JsonVariant::as()") {
 
     SECTION("as<JsonObject>()") {
       JsonObject o = variant.as<JsonObject>();
+      CHECK(o.isNull() == true);
+    }
+
+    SECTION("as<JsonObjectConst>()") {
+      JsonObjectConst o = variant.as<JsonObjectConst>();
       CHECK(o.isNull() == true);
     }
   }
@@ -348,16 +358,5 @@ TEST_CASE("JsonVariant::as()") {
     variant.link(doc2);
 
     CHECK(variant.as<std::string>() == "hello");
-  }
-
-  SECTION("linked bool") {
-    StaticJsonDocument<128> doc2;
-    variant.link(doc2);
-
-    doc2.set(true);
-    CHECK(variant.as<bool>() == true);
-
-    doc2.set(false);
-    CHECK(variant.as<bool>() == false);
   }
 }

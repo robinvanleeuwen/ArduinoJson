@@ -366,7 +366,7 @@ class VariantRef : public VariantRefBase<VariantData>,
       return;
     const VariantData *targetData = getData(target);
     if (targetData)
-      _data->setPointer(targetData);
+      *_data = *targetData;
     else
       _data->setNull();
   }
