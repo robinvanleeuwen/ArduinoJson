@@ -71,4 +71,17 @@ TEST_CASE("JsonVariant::shallowCopy()") {
     CHECK(unbound.memoryUsage() == 0);
     CHECK(unbound.size() == 0);
   }
+
+  SECTION("preserves owned key bit") {
+    doc2.set(42);
+
+    doc1["a"].shallowCopy(doc2);
+    doc1[std::string("b")].shallowCopy(doc2);
+
+    JsonObject::iterator it = doc1.as<JsonObject>().begin();
+
+    CHECK(it->key().isLinked() == true);
+    ++it;
+    CHECK(it->key().isLinked() == false);
+  }
 }

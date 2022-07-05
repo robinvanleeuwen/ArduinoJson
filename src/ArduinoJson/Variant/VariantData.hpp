@@ -39,7 +39,7 @@ class VariantData {
 
   void operator=(const VariantData &src) {
     _content = src._content;
-    _flags = src._flags;  // TODO: exclude owned key bit
+    _flags = uint8_t((_flags & OWNED_KEY_BIT) | (src._flags & ~OWNED_KEY_BIT));
   }
 
   template <typename TVisitor>
