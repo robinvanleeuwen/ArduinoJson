@@ -9,7 +9,6 @@ add_executable(JsonArrayTests
 	copyArray.cpp
 	createNested.cpp
 	equals.cpp
-	get.cpp
 	isNull.cpp
 	iterator.cpp
 	memoryUsage.cpp
@@ -25,5 +24,5 @@ add_test(JsonArray JsonArrayTests)
 
 set_tests_properties(JsonArray
 	PROPERTIES
-		LABELS 		"Catch"
+	LABELS "Catch"
 )
